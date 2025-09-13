@@ -1,88 +1,101 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>114年 三保一退查詢小工具</title>
+  <style>
+    :root{--radius:16px}
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; 
+           background: #f6f7fb; margin: 0; padding: 24px;}
+    .wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:var(--radius);
+          box-shadow:0 8px 24px rgba(0,0,0,.06);padding:24px}
+    h1{font-size:22px;margin:0 0 4px}
+    p.sub{color:#666;margin:0 0 16px}
+    .row{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+    input[type=number]{flex:1;padding:12px 14px;border:1px solid #e5e7eb;border-radius:12px;font-size:16px}
+    button{padding:12px 16px;border:0;background:#111827;color:#fff;border-radius:12px;font-size:16px;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .result{margin-top:16px;border:1px dashed #e5e7eb;border-radius:12px;padding:16px;background:#fcfcfe}
+    .kv{display:grid;grid-template-columns:140px 1fr;row-gap:10px;column-gap:8px;font-size:16px}
+    .kv .k{color:#6b7280}
+    .muted{font-size:12px;color:#9ca3af;margin-top:10px}
+    footer{margin-top:18px;color:#9ca3af;font-size:12px;text-align:center}
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="zh-TW"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;114年 三保一退查詢小工具&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>input, button { padding: 8px; margin: 5px; font-size: 16px; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.result { margin-top: 20px; font-size: 18px; font-weight: bold; line-height: 1.8; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;💡 114年 三保一退查詢小工具&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;p&gt;輸入你的薪水，快速比對投保級距與負擔金額&lt;/p&gt;</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;input type="number" id="salary" placeholder="請輸入薪水"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="calculate()"&gt;查詢&lt;/button&gt;</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="result" id="output"&gt;&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">  </span></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 114年級距表 (僅保留主要欄位：級距、公司合計、員工合計、勞退)</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const table = [</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 1500, company: 2506, employee: 720, laborPension: 90 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 3000, company: 2596, employee: 720, laborPension: 180 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 4500, company: 2686, employee: 720, laborPension: 270 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 6000, company: 2776, employee: 720, laborPension: 360 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 7500, company: 2866, employee: 720, laborPension: 450 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 8700, company: 2938, employee: 720, laborPension: 522 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 9900, company: 3010, employee: 720, laborPension: 594 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 11100, company: 3082, employee: 720, laborPension: 666 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 12540, company: 3293, employee: 756, laborPension: 752 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 13500, company: 3384, employee: 781, laborPension: 810 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 15840, company: 3780, employee: 839, laborPension: 950 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 16500, company: 3878, employee: 856, laborPension: 990 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 17280, company: 3993, employee: 875, laborPension: 1037 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 17880, company: 4081, employee: 890, laborPension: 1073 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 19047, company: 4253, employee: 919, laborPension: 1143 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 20008, company: 4395, employee: 943, laborPension: 1200 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 21009, company: 4689, employee: 968, laborPension: 1261 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 22000, company: 4689, employee: 993, laborPension: 1320 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 23100, company: 4852, employee: 1018, laborPension: 1386 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 24000, company: 4980, employee: 1043, laborPension: 1440 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 25250, company: 5169, employee: 1075, laborPension: 1515 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 26400, company: 5338, employee: 1103, laborPension: 1584 },</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{ level: 27600, company: 5515, employee: 1133, laborPension: 1656 }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function calculate() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const salary = parseInt(document.getElementById("salary").value);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (isNaN(salary)) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById("output").innerHTML = "⚠️ 請輸入正確的薪水數字";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>// 找最接近且不超過薪水的級距</p>
-<p class="p1"><span class="Apple-converted-space">      </span>let matched = table[0];</p>
-<p class="p1"><span class="Apple-converted-space">      </span>for (let i = 0; i &lt; table.length; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if (salary &gt;= table[i].level) {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>matched = table[i];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById("output").innerHTML =<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>`📊 投保級距：${matched.level} 元 &lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">         </span>🏢 公司負擔合計：${matched.company} 元 &lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">         </span>👩‍💼 員工負擔合計：${matched.employee} 元 &lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">         </span>💰 勞退提撥(雇主6%)：${matched.laborPension} 元`;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <div class="wrap">
+    <h1>114 年｜三保一退查詢小工具</h1>
+    <p class="sub">輸入月薪 → 自動比對投保級距，快速核對勞保與勞退是否正確</p>
+    <div class="row">
+      <input type="number" id="salary" placeholder="請輸入月薪（例如 30000）" />
+      <button id="go">查詢</button>
+    </div>
+    <div class="result" id="output">尚未查詢</div>
+    <p class="muted">說明：結果以 114 年常見對照表為基礎，僅供快速核對。實際金額以主管機關公告與投保單位作業為準。</p>
+  </div>
+  <footer>© Demo tool</footer>
+
+<script>
+// 114 年對照表（取你給圖上的主要欄位）
+const TABLE = [
+  { level: 1500,  company: 2506, employee: 720,  pension6: 90  },
+  { level: 3000,  company: 2596, employee: 720,  pension6: 180 },
+  { level: 4500,  company: 2686, employee: 720,  pension6: 270 },
+  { level: 6000,  company: 2776, employee: 720,  pension6: 360 },
+  { level: 7500,  company: 2866, employee: 720,  pension6: 450 },
+  { level: 8700,  company: 2938, employee: 720,  pension6: 522 },
+  { level: 9900,  company: 3010, employee: 720,  pension6: 594 },
+  { level: 11100, company: 3082, employee: 720,  pension6: 666 },
+  { level: 12540, company: 3293, employee: 756,  pension6: 752 },
+  { level: 13500, company: 3384, employee: 781,  pension6: 810 },
+  { level: 15840, company: 3780, employee: 839,  pension6: 950 },
+  { level: 16500, company: 3878, employee: 856,  pension6: 990 },
+  { level: 17280, company: 3993, employee: 875,  pension6: 1037 },
+  { level: 17880, company: 4081, employee: 890,  pension6: 1073 },
+  { level: 19047, company: 4253, employee: 919,  pension6: 1143 },
+  { level: 20008, company: 4395, employee: 943,  pension6: 1200 },
+  { level: 21009, company: 4689, employee: 968,  pension6: 1261 },
+  { level: 22000, company: 4689, employee: 993,  pension6: 1320 },
+  { level: 23100, company: 4852, employee: 1018, pension6: 1386 },
+  { level: 24000, company: 4980, employee: 1043, pension6: 1440 },
+  { level: 25250, company: 5169, employee: 1075, pension6: 1515 },
+  { level: 26400, company: 5338, employee: 1103, pension6: 1584 },
+  { level: 27600, company: 5515, employee: 1133, pension6: 1656 },
+];
+
+const salaryInput = document.querySelector("#salary");
+const goBtn = document.querySelector("#go");
+const output = document.querySelector("#output");
+
+function findBracket(salary){
+  let match = TABLE[0];
+  for (const row of TABLE){
+    if (salary >= row.level) match = row;
+  }
+  return match;
+}
+function format(n){ return n.toLocaleString("zh-TW"); }
+
+function calculate(){
+  const val = Number(salaryInput.value);
+  if (!val || val <= 0){
+    output.innerHTML = "⚠️ 請輸入正確的月薪數字";
+    return;
+  }
+  const row = findBracket(val);
+  output.innerHTML = `
+    <div class="kv">
+      <div class="k">輸入月薪</div><div>${format(val)} 元</div>
+      <div class="k">投保級距</div><div>${format(row.level)} 元</div>
+      <div class="k">員工負擔合計</div><div>${format(row.employee)} 元</div>
+      <div class="k">公司負擔合計</div><div>${format(row.company)} 元</div>
+      <div class="k">勞退提撥（6%）</div><div>${format(row.pension6)} 元</div>
+    </div>`;
+}
+
+goBtn.addEventListener("click", calculate);
+salaryInput.addEventListener("keydown", (e)=>{ if (e.key === "Enter") calculate(); });
+</script>
 </body>
 </html>
