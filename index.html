@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>114年 三保一退查詢小工具</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+           background: #f6f7fb; margin: 0; padding: 24px;}
+    .wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:16px;
+          box-shadow:0 8px 24px rgba(0,0,0,.06);padding:24px}
+    h1{font-size:22px;margin:0 0 4px}
+    p.sub{color:#666;margin:0 0 16px}
+    .row{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+    input[type=number]{flex:1;padding:12px 14px;border:1px solid #e5e7eb;border-radius:12px;font-size:16px}
+    button{padding:12px 16px;border:0;background:#111827;color:#fff;border-radius:12px;font-size:16px;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .result{margin-top:16px;border:1px dashed #e5e7eb;border-radius:12px;padding:16px;background:#fcfcfe}
+    .kv{display:grid;grid-template-columns:180px 1fr;row-gap:10px;column-gap:8px;font-size:16px}
+    .kv .k{color:#6b7280}
+    .muted{font-size:13px;color:#374151;margin-top:20px;line-height:1.6;text-align:left}
+    footer{margin-top:18px;color:#9ca3af;font-size:12px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>114 年｜三保一退查詢小工具</h1>
+    <p class="sub">輸入月薪 → 自動比對保險級距，快速核對是否正確</p>
+    <div class="row">
+      <input type="number" id="salary" placeholder="請輸入月薪（例如 30000）" />
+      <button id="go">查詢</button>
+    </div>
+    <div class="result" id="output">尚未查詢</div>
+    <div class="muted">
+      <p>使用說明：</p>
+      <ul>
+        <li>本表為方便勞工快速查詢工資所對應的保險級距，有以下提醒：</li>
+        <li>勞保以日為單位，健保以月為單位，本程式統一用「月」（30日）來計算各個級距的勞健保費用。</li>
+        <li>健保僅計算個人保費，未納入眷屬保費。</li>
+      </ul>
+    </div>
+  </div>
+  <footer>© Demo tool</footer>
+
+<script>
+// 114年勞保投保薪資級距（完整12級，來源：商周整理）
+const LABOR_LEVELS = [11100, 12540, 13500, 15840, 16500, 17280, 17880, 19047, 20008, 21009, 22000, 23100, 24000, 25250, 26400, 27600, 30200, 33000, 34500, 36300, 38200, 40100, 42000, 43900, 45800];
+// 114年健保投保薪資級距（常見簡化版，最低28590，最高219500；完整表應填入全範圍級距）
+const HEALTH_LEVELS = [28590, 28800, 30300, 31800, 33300, 34800, 36300, 38200, 40100, 42000, 43900, 45800,
+                       48200, 50600, 53000, 55400, 57800, 60200, 62600, 65000, 67400, 69800, 72200, 74600, 77000,
+                       79400, 81800, 84200, 86600, 89000, 91400, 93800, 96200, 98600, 101000, 103400, 105800, 108200,
+                       110600, 113000, 115400, 117800, 120200, 122600, 125000, 127400, 129800, 132200, 134600, 137000,
+                       139400, 141800, 144200, 146600, 149000, 151400, 153800, 156200, 158600, 161000, 163400, 165800,
+                       168200, 170600, 173000, 175400, 177800, 180200, 182600, 185000, 187400, 189800, 192200, 194600,
+                       197000, 199400, 201800, 204200, 206600, 209000, 211400, 213800, 216200, 218600, 219500];
+
+// 找到 >= salary 的第一個級距，若超過最大值，取最大值
+function findLevel(salary, levels, min, max){
+  if (salary < min) return min;
+  if (salary > max) return max;
+  for (let lvl of levels){
+    if (salary <= lvl) return lvl;
+  }
+  return max;
+}
+
+function format(n){ return n.toLocaleString("zh-TW"); }
+
+function calculate(){
+  const val = Number(document.querySelector("#salary").value);
+  const output = document.querySelector("#output");
+  if (!val || val <= 0){
+    output.innerHTML = "⚠️ 請輸入正確的月薪數字";
+    return;
+  }
+
+  const laborLevel = findLevel(val, LABOR_LEVELS, 11100, 45800);
+  const healthLevel = findLevel(val, HEALTH_LEVELS, 28590, 219500);
+  const pensionBase = Math.min(Math.max(val, 1500), 150000);
+  const pension = pensionBase * 0.06;
+
+  output.innerHTML = `
+    <div class="kv">
+      <div class="k">輸入月薪</div><div>${format(val)} 元</div>
+      <div class="k">勞保投保級距</div><div>${format(laborLevel)} 元</div>
+      <div class="k">健保投保級距</div><div>${format(healthLevel)} 元</div>
+      <div class="k">勞退提繳金額 (6%)</div><div>${format(pension)} 元 (基數 ${format(pensionBase)} 元)</div>
+    </div>`;
+}
+
+document.querySelector("#go").addEventListener("click", calculate);
+document.querySelector("#salary").addEventListener("keydown", (e)=>{ if (e.key === "Enter") calculate(); });
+</script>
+</body>
+</html>
