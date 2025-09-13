@@ -2,145 +2,145 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>114年 三保一退查詢小工具</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-           background: #f6f7fb; margin: 0; padding: 24px;}
-    .wrap{max-width:840px;margin:0 auto;background:#fff;border-radius:16px;
-          box-shadow:0 8px 24px rgba(0,0,0,.06);padding:24px}
-    h1{font-size:22px;margin:0 0 4px}
-    p.sub{color:#666;margin:0 0 16px}
-    .row{display:flex;gap:12px;align-items:center;margin-bottom:8px}
-    input[type=number]{flex:1;padding:12px 14px;border:1px solid #e5e7eb;border-radius:12px;font-size:16px}
-    button{padding:12px 16px;border:0;background:#111827;color:#fff;border-radius:12px;font-size:16px;cursor:pointer}
-    button:active{transform:translateY(1px)}
-    table{width:100%;border-collapse:collapse;margin-top:16px;font-size:16px}
-    th,td{border:1px solid #e5e7eb;padding:10px;text-align:center}
-    th{background:#f9fafb;color:#374151}
-    tfoot td{font-weight:bold;background:#f3f4f6}
-    .muted{font-size:13px;color:#374151;margin-top:20px;line-height:1.6;text-align:left}
-    footer{margin-top:18px;color:#9ca3af;font-size:12px;text-align:center}
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9fafb;
+      color: #333;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
+    h2 {
+      font-size: 16px;
+      font-weight: normal;
+      margin-top: 0;
+      color: #555;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0;
+    }
+    button {
+      background: #111827;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #111827;
+    }
+    .card p {
+      margin: 4px 0;
+      font-size: 15px;
+    }
+    .note {
+      font-size: 14px;
+      margin-top: 20px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>114 年｜三保一退查詢小工具</h1>
-    <p class="sub">輸入月薪 → 自動比對保險級距，快速核對是否正確</p>
-    <div class="row">
-      <input type="number" id="salary" placeholder="請輸入月薪（例如 30000）" />
-      <button id="go">查詢</button>
-    </div>
-    <div id="output">尚未查詢</div>
-    <div class="muted">
-      <p>使用說明：</p>
-      <ul>
-        <li>本表為方便勞工快速查詢工資所對應的保險級距，有以下提醒：</li>
-        <li>勞保以日為單位，健保以月為單位，本程式統一用「月」（30日）來計算各個級距的勞健保費用。</li>
-        <li>健保僅計算個人保費，未納入眷屬保費。</li>
-      </ul>
-    </div>
+  <h1>114 年｜三保一退查詢小工具</h1>
+  <h2>輸入月薪 → 自動比對保險級距，快速核對是否正確</h2>
+
+  <input type="number" id="salary" placeholder="請輸入月薪">
+  <button onclick="calculate()">查詢</button>
+
+  <div class="result" id="output"></div>
+
+  <div class="note">
+    <p>使用說明：</p>
+    <ul>
+      <li>本表為方便勞工快速查詢工資所對應的保險級距。</li>
+      <li>勞保以日為單位，健保以月為單位，本程式統一以「月」（30日）計算。</li>
+      <li>健保僅計算個人保費，未納入眷屬保費。</li>
+    </ul>
   </div>
-  <footer>© Demo tool</footer>
 
 <script>
-// 勞保級距（簡化示例，實務應完整）
-const LABOR_LEVELS = [11100, 12540, 13500, 15840, 16500, 17280, 17880, 19047, 20008, 21009, 22000, 23100, 24000, 25250, 26400, 27600, 30200, 33000, 34500, 36300, 38200, 40100, 42000, 43900, 45800];
-// 健保級距（簡化，最低28590，最高219500）
-const HEALTH_LEVELS = [28590, 28800, 30300, 31800, 33300, 34800, 36300, 38200, 40100, 42000, 43900, 45800,
-                       48200, 50600, 53000, 55400, 57800, 60200, 62600, 65000, 67400, 69800, 72200, 74600, 77000,
-                       79400, 81800, 84200, 86600, 89000, 91400, 93800, 96200, 98600, 101000, 103400, 105800, 108200,
-                       110600, 113000, 115400, 117800, 120200, 122600, 125000, 127400, 129800, 132200, 134600, 137000,
-                       139400, 141800, 144200, 146600, 149000, 151400, 153800, 156200, 158600, 161000, 163400, 165800,
-                       168200, 170600, 173000, 175400, 177800, 180200, 182600, 185000, 187400, 189800, 192200, 194600,
-                       197000, 199400, 201800, 204200, 206600, 209000, 211400, 213800, 216200, 218600, 219500];
+  // 保費率設定（僅示例，可依114年最新公告調整）
+  const laborRates = { personal: 0.022, company: 0.077 }; 
+  const healthRates = { personal: 0.017, company: 0.034 }; 
+  const pensionRate = 0.06;
 
-// 保費率
-const LABOR_RATE = 0.11;
-const HEALTH_RATE = 0.0559;
-const PENSION_RATE = 0.06;
-
-// 分攤比例
-const LABOR_EMP = 0.2, LABOR_COM = 0.7;
-const HEALTH_EMP = 0.3, HEALTH_COM = 0.6;
-
-function findLevel(salary, levels, min, max){
-  if (salary < min) return min;
-  if (salary > max) return max;
-  for (let lvl of levels){
-    if (salary <= lvl) return lvl;
-  }
-  return max;
-}
-
-function format(n){ return n.toLocaleString("zh-TW"); }
-
-function calculate(){
-  const val = Number(document.querySelector("#salary").value);
-  const output = document.querySelector("#output");
-  if (!val || val <= 0){
-    output.innerHTML = "⚠️ 請輸入正確的月薪數字";
-    return;
+  // 勞保級距
+  const laborLevels = [11100, 12000, 12600, 13300, 14000, 15000, 15800, 16500, 17200, 17800, 19000, 20000, 21000, 22000, 24000, 25200, 26400, 27600, 28800, 30300, 31800, 33300, 34800, 36300, 38200, 40100, 42000, 43900, 45800];
+  // 健保級距
+  const healthLevels = [28590, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 50600, 53000, 56000, 60000, 64000, 68000, 72000, 76000, 80000, 88000, 96000, 104000, 112000, 120000, 128000, 136000, 144000, 152000, 160000, 168000, 176000, 184000, 192000, 200000, 208000, 216000, 219500];
+  
+  function getLevel(salary, levels, min, max) {
+    if (salary < min) return min;
+    if (salary > max) return max;
+    for (let i = 0; i < levels.length; i++) {
+      if (salary <= levels[i]) return levels[i];
+    }
+    return max;
   }
 
-  const laborLevel = findLevel(val, LABOR_LEVELS, 11100, 45800);
-  const healthLevel = findLevel(val, HEALTH_LEVELS, 28590, 219500);
-  const pensionBase = Math.min(Math.max(val, 1500), 150000);
+  function calculate() {
+    const salary = parseInt(document.getElementById('salary').value);
+    if (!salary) {
+      document.getElementById('output').innerHTML = "<p>請輸入正確薪資</p>";
+      return;
+    }
 
-  const laborTotal = laborLevel * LABOR_RATE;
-  const laborEmp = Math.round(laborTotal * LABOR_EMP);
-  const laborCom = Math.round(laborTotal * LABOR_COM);
+    // 勞保級距
+    const laborLevel = getLevel(salary, laborLevels, 11100, 45800);
+    const laborPersonal = Math.round(laborLevel * laborRates.personal);
+    const laborCompany = Math.round(laborLevel * laborRates.company);
 
-  const healthTotal = healthLevel * HEALTH_RATE;
-  const healthEmp = Math.round(healthTotal * HEALTH_EMP);
-  const healthCom = Math.round(healthTotal * HEALTH_COM);
+    // 健保級距
+    const healthLevel = getLevel(salary, healthLevels, 28590, 219500);
+    const healthPersonal = Math.round(healthLevel * healthRates.personal);
+    const healthCompany = Math.round(healthLevel * healthRates.company);
 
-  const pension = Math.round(pensionBase * PENSION_RATE);
-  const pensionEmp = 0;
-  const pensionCom = pension;
+    // 勞退：用實際工資
+    const pensionBase = Math.min(Math.max(salary, 1500), 150000);
+    const pensionCompany = Math.round(pensionBase * pensionRate);
 
-  const empTotal = laborEmp + healthEmp + pensionEmp;
-  const comTotal = laborCom + healthCom + pensionCom;
-
-  output.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>投保級距</th>
-          <th>勞保</th>
-          <th>健保</th>
-          <th>勞退</th>
-          <th>小計</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>級距金額</td>
-          <td>${format(laborLevel)}</td>
-          <td>${format(healthLevel)}</td>
-          <td>${format(pensionBase)}</td>
-          <td>-</td>
-        </tr>
-        <tr>
-          <td>個人負擔</td>
-          <td>${format(laborEmp)}</td>
-          <td>${format(healthEmp)}</td>
-          <td>${format(pensionEmp)}</td>
-          <td>${format(empTotal)}</td>
-        </tr>
-        <tr>
-          <td>公司負擔</td>
-          <td>${format(laborCom)}</td>
-          <td>${format(healthCom)}</td>
-          <td>${format(pensionCom)}</td>
-          <td>${format(comTotal)}</td>
-        </tr>
-      </tbody>
-    </table>`;
-}
-
-document.querySelector("#go").addEventListener("click", calculate);
-document.querySelector("#salary").addEventListener("keydown", (e)=>{ if (e.key === "Enter") calculate(); });
+    // 組合輸出
+    let html = `
+      <div class="card">
+        <h3>勞保</h3>
+        <p>級距金額：${laborLevel.toLocaleString()} 元</p>
+        <p>公司負擔：${laborCompany.toLocaleString()} 元</p>
+        <p>個人負擔：${laborPersonal.toLocaleString()} 元</p>
+      </div>
+      <div class="card">
+        <h3>健保</h3>
+        <p>級距金額：${healthLevel.toLocaleString()} 元</p>
+        <p>公司負擔：${healthCompany.toLocaleString()} 元</p>
+        <p>個人負擔：${healthPersonal.toLocaleString()} 元</p>
+      </div>
+      <div class="card">
+        <h3>勞退</h3>
+        <p>實際工資：${pensionBase.toLocaleString()} 元</p>
+        <p>公司負擔：${pensionCompany.toLocaleString()} 元</p>
+        <p>個人負擔：0 元</p>
+      </div>
+    `;
+    document.getElementById('output').innerHTML = html;
+  }
 </script>
 </body>
 </html>
