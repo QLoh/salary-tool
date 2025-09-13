@@ -159,27 +159,14 @@
     }
   </script>
   
-   <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px 10px; border-top:1px solid #ddd;">
-  © <span id="year"></span> 水山子的研究室 ｜114年三保一退查詢小工具
+   <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px">
+  © <span id="year"></span> 水山子的研究室 ｜ 114年三保一退查詢小工具
   <br>
   意見回饋信箱：sarraaagoole@gmail.com
   <br>
-  使用人次：<span id="visits">讀取中...</span>
+  使用人次：
+  <img src="https://hitwebcounter.com/counter/counter.php?page=21438887&style=0006&nbdigits=5&type=page&initCount=0" 
+       title="訪客人數" alt="counter" border="0" />
 </footer>
-
-<script>
-  // 自動更新年份
-  document.getElementById("year").innerText = new Date().getFullYear();
-
-  // CountAPI - 每次載入就 +1
-  fetch('https://api.countapi.xyz/hit/qloh/salary-tool')
-  .then(res => res.json())
-  .then(res => {
-    document.getElementById('visits').innerText = res.value.toLocaleString();
-  })
-  .catch(() => {
-    document.getElementById('visits').innerText = '讀取失敗';
-  });
-</script>
 </body>
 </html>
