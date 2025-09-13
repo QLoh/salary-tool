@@ -12,9 +12,7 @@
       line-height: 1.6;
       color: #333;
     }
-    h2 {
-      margin-bottom: 10px;
-    }
+    h2 { margin-bottom: 10px; }
     input, button {
       font-size: 18px;
       padding: 10px;
@@ -27,9 +25,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #374151;
-    }
+    button:hover { background-color: #374151; }
     .result {
       margin-top: 20px;
       padding: 15px;
@@ -37,9 +33,7 @@
       border-radius: 8px;
       background: #f9f9f9;
     }
-    .result .section {
-      margin-bottom: 20px;
-    }
+    .result .section { margin-bottom: 20px; }
     .result .section h4 {
       margin-bottom: 5px;
       font-size: 18px;
@@ -50,18 +44,14 @@
       padding-left: 0;
       margin: 0;
     }
-    .result li {
-      margin: 4px 0;
-    }
+    .result li { margin: 4px 0; }
     .total {
       margin-top: 8px;
       font-weight: bold;
       color: #000;
     }
     @media (max-width: 600px) {
-      body {
-        font-size: 20px;
-      }
+      body { font-size: 20px; }
       input, button {
         width: 100%;
         box-sizing: border-box;
@@ -81,92 +71,93 @@
   <h3>使用說明：</h3>
   <ul>
     <li>本工具目的是方便勞工快速查詢自己的保險級距。</li>
-    <li>可登入勞保局e化服務系統查詢資訊是否正確。</li>
+    <li>可同時登入勞保局e化服務系統比對投保資訊。</li>
     <li>提醒：勞保以日為單位，健保以月為單位，本工具統一以「月/30日」計算。</li>
-    <li>提醒：健保僅計算個人保費，未納入眷屬保費。</li>
+    <li>提醒：本工具健保僅計算個人保費，未納入眷屬保費。</li>
   </ul>
 
+  <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px">
+    © <span id="year"></span> 水山子的研究室
+    <br>
+    意見回饋信箱：
+    <a href="mailto:sarraaagoole@gmail.com?subject=三保一退查詢小工具意見回饋"
+       style="color:#0066cc; text-decoration:none;">
+       sarraaagoole@gmail.com
+    </a>
+    <br>
+    使用人次：
+    <img src="https://hitwebcounter.com/counter/counter.php?page=21438887&style=0006&nbdigits=5&type=page&initCount=0"
+         title="訪客人數" alt="counter" border="0" />
+  </footer>
+
   <script>
-    // 勞保、健保、勞退級距（簡化示範，實際應完整帶入 114 年資料表）
-    const laborLevels = [11100, 13300, 15840, 19800, 22100, 25200, 28800, 33000, 37200, 40800, 45800];
-    const healthLevels = [28590, 30300, 33000, 36300, 40800, 45000, 48600, 53000, 56000, 60600, 66000, 72600, 79200, 85800, 93000, 100800, 109200, 117600, 126000, 134400, 145800, 157200, 168600, 180000, 192000, 202000, 219500];
-    
-    function getLevel(salary, levels, min, max) {
-      if (salary < min) return min;
-      if (salary > max) return max;
-      for (let i = 0; i < levels.length; i++) {
-        if (salary <= levels[i]) return levels[i];
+    function getLevel(salary, list) {
+      for (let i = 0; i < list.length; i++) {
+        if (salary <= list[i].level) return list[i];
       }
-      return max;
+      return list[list.length - 1]; // 超過最高級距 → 用最高
     }
 
     function calculate() {
-      const salary = parseInt(document.getElementById('salary').value);
-      if (!salary || salary <= 0) {
-        document.getElementById('output').innerHTML = "<p>請輸入有效的月薪。</p>";
+      const salary = parseInt(document.getElementById("salary").value);
+      if (isNaN(salary) || salary <= 0) {
+        document.getElementById("output").innerHTML = "<p>請輸入有效的月薪。</p>";
         return;
       }
 
-      const laborLevel = getLevel(salary, laborLevels, 11100, 45800);
-      const healthLevel = getLevel(salary, healthLevels, 28590, 219500);
-      const pensionBase = Math.min(Math.max(salary, 1500), 150000);
+      fetch("grades.json")
+        .then(res => res.json())
+        .then(grades => {
+          // 勞保
+          const labor = getLevel(salary, grades.labor);
+          // 健保
+          const health = getLevel(salary, grades.health);
+          // 勞退（直接用實際工資）
+          const pension = {
+            level: salary,
+            company: Math.round(salary * 0.06),
+            employee: 0
+          };
 
-      // 假設費率（範例，需改成 114 年正式費率）
-      const laborRateEmp = 0.0202, laborRateComp = 0.0704;
-      const healthRateEmp = 0.0168, healthRateComp = 0.0484;
-      const pensionRateComp = 0.06;
+          const totalEmp = labor.employee + health.employee + pension.employee;
+          const totalComp = labor.company + health.company + pension.company;
 
-      const laborEmp = Math.round(laborLevel * laborRateEmp);
-      const laborComp = Math.round(laborLevel * laborRateComp);
-
-      const healthEmp = Math.round(healthLevel * healthRateEmp);
-      const healthComp = Math.round(healthLevel * healthRateComp);
-
-      const pensionEmp = 0;
-      const pensionComp = Math.round(pensionBase * pensionRateComp);
-
-      const totalEmp = laborEmp + healthEmp + pensionEmp;
-      const totalComp = laborComp + healthComp + pensionComp;
-
-      document.getElementById('output').innerHTML = `
-        <div class="section">
-          <h4>投保級距</h4>
-          <ul>
-            <li>勞保：${laborLevel.toLocaleString()} 元</li>
-            <li>健保：${healthLevel.toLocaleString()} 元</li>
-            <li>勞退：${pensionBase.toLocaleString()} 元（實際工資）</li>
-          </ul>
-        </div>
-        <div class="section">
-          <h4>個人負擔</h4>
-          <ul>
-            <li>勞保：${laborEmp.toLocaleString()} 元</li>
-            <li>健保：${healthEmp.toLocaleString()} 元</li>
-            <li>勞退：${pensionEmp} 元</li>
-          </ul>
-          <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
-        </div>
-        <div class="section">
-          <h4>公司負擔</h4>
-          <ul>
-            <li>勞保：${laborComp.toLocaleString()} 元</li>
-            <li>健保：${healthComp.toLocaleString()} 元</li>
-            <li>勞退：${pensionComp.toLocaleString()} 元</li>
-          </ul>
-          <div class="total">合計：${totalComp.toLocaleString()} 元</div>
-        </div>
-      `;
+          document.getElementById("output").innerHTML = `
+            <div class="section">
+              <h4>投保級距</h4>
+              <ul>
+                <li>勞保：${labor.level.toLocaleString()} 元</li>
+                <li>健保：${health.level.toLocaleString()} 元</li>
+                <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
+              </ul>
+            </div>
+            <div class="section">
+              <h4>個人負擔</h4>
+              <ul>
+                <li>勞保：${labor.employee.toLocaleString()} 元</li>
+                <li>健保：${health.employee.toLocaleString()} 元</li>
+                <li>勞退：0 元</li>
+              </ul>
+              <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
+            </div>
+            <div class="section">
+              <h4>公司負擔</h4>
+              <ul>
+                <li>勞保：${labor.company.toLocaleString()} 元</li>
+                <li>健保：${health.company.toLocaleString()} 元</li>
+                <li>勞退：${pension.company.toLocaleString()} 元</li>
+              </ul>
+              <div class="total">合計：${totalComp.toLocaleString()} 元</div>
+            </div>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
+        });
     }
+
+    // 自動更新年份
+    document.getElementById("year").innerText = new Date().getFullYear();
   </script>
-  
-   <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px">
-  © <span id="year"></span> 水山子的研究室
-  <br>
-  意見回饋信箱：sarraaagoole@gmail.com
-  <br>
-  使用人次：
-  <img src="https://hitwebcounter.com/counter/counter.php?page=21438887&style=0006&nbdigits=5&type=page&initCount=0" 
-       title="訪客人數" alt="counter" border="0" />
-</footer>
 </body>
 </html>
