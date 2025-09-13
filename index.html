@@ -150,15 +150,8 @@
                 <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
               </ul>
             </div>
-            
-            <style>
-  .divider {
-    border: none;
-    border-top: 1px solid #e5e7eb; /* 淡灰色細線 */
-    margin: 16px 0;                /* 與上下內容留白 */
-  }
-</style>
-            <div class="section">
+            <hr class="divider"> <!-- ← 細分隔線就加在這 -->
+             <div class="section">
               <h4>個人負擔</h4>
               <ul>
                 <li>勞保：${labor.employee.toLocaleString()} 元</li>
@@ -167,14 +160,7 @@
               </ul>
               <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
             </div>
-            
-            <style>
-  .divider {
-    border: none;
-    border-top: 1px solid #e5e7eb; /* 淡灰色細線 */
-    margin: 16px 0;                /* 與上下內容留白 */
-  }
-</style>
+            <hr class="divider"> <!-- ← 細分隔線就加在這 -->
             <div class="section">
               <h4>公司負擔</h4>
               <ul>
