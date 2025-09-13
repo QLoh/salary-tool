@@ -3,7 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>114年 三保一退查詢小工具</title>
+  <title>114年勞保健保勞退查詢小工具｜快速比對投保級距</title>
+  <meta name="description" content="輸入薪資即可快速查詢 114 年最新勞保、健保、勞退的投保級距與公司/個人負擔金額，協助勞工與 HR 確認薪資是否投保正確。">
+  <meta name="keywords" content="114年, 勞保級距, 健保保費, 勞退提繳, 勞健保, 投保薪資, 保費計算, HR 工具">
+  <meta name="author" content="水山子的研究室">
+
+  <!-- 結構化資料 (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "114年勞保健保勞退查詢小工具",
+    "description": "輸入薪資即可快速查詢勞保、健保、勞退的投保級距與保費分攤。",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "url": "https://你的帳號.github.io/你的repo/",
+    "author": {
+      "@type": "Organization",
+      "name": "水山子的研究室"
+    }
+  }
+  </script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,7 +33,7 @@
       line-height: 1.6;
       color: #333;
     }
-    h2 { margin-bottom: 10px; }
+    h1, h2 { margin-bottom: 10px; }
     input, button {
       font-size: 18px;
       padding: 10px;
@@ -60,20 +81,21 @@
   </style>
 </head>
 <body>
-  <h2>114年三保一退查詢</h2>
-  <p>輸入月薪 → 自動比對保險級距，快速核對是否正確</p>
+  <h1>114年勞保健保勞退查詢</h1>
+  <p>只要輸入月薪，就能快速比對投保級距，檢視公司與個人保費是否正確。</p>
 
   <input type="number" id="salary" placeholder="請輸入月薪">
   <button onclick="calculate()">查詢</button>
 
   <div class="result" id="output"></div>
 
-  <h3>使用說明：</h3>
+  <h2>使用說明</h2>
   <ul>
     <li>本工具目的是方便勞工快速查詢自己的保險級距。</li>
     <li>可同時登入勞保局e化服務系統比對投保資訊。</li>
-    <li>提醒：勞保以日為單位，健保以月為單位，本工具統一以「月/30日」計算。</li>
-    <li>提醒：本工具健保僅計算個人保費，未納入眷屬保費。</li>
+    <li>勞保以日為單位，健保以月為單位，本程式統一以「月」（30日）計算。</li>
+    <li>健保僅計算個人保費，未納入眷屬保費。</li>
+    <li>勞退依實際工資 6% 提繳，不受級距限制。</li>
   </ul>
 
   <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px">
@@ -95,7 +117,7 @@
       for (let i = 0; i < list.length; i++) {
         if (salary <= list[i].level) return list[i];
       }
-      return list[list.length - 1]; // 超過最高級距 → 用最高
+      return list[list.length - 1];
     }
 
     function calculate() {
@@ -108,11 +130,8 @@
       fetch("grades.json")
         .then(res => res.json())
         .then(grades => {
-          // 勞保
           const labor = getLevel(salary, grades.labor);
-          // 健保
           const health = getLevel(salary, grades.health);
-          // 勞退（直接用實際工資）
           const pension = {
             level: salary,
             company: Math.round(salary * 0.06),
@@ -156,7 +175,6 @@
         });
     }
 
-    // 自動更新年份
     document.getElementById("year").innerText = new Date().getFullYear();
   </script>
 </body>
