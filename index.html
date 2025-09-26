@@ -3,39 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><span id="year"></span>年勞保健保勞退查詢</title>
+    <title>114年勞保健保勞退查詢</title>
     <style>
-        /* 保持您提供的風格：乾淨、藍色/紅色按鈕、清晰的輸出 */
+        /* 調整風格：黑色文字，深色按鈕，貼近截圖的樣式 */
         body {
             font-family: Arial, "Helvetica Neue", Helvetica, sans-serif, "微軟正黑體", "Microsoft JhengHei";
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
-            background-color: #f8f8f8;
+            background-color: white; /* 整個頁面背景使用白色 */
             color: #333;
         }
         h1 {
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
+            color: #333;
+            border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
         }
         h4 {
-            color: #2980b9;
+            color: #333; /* 標題顏色與內文保持一致 */
             margin-top: 0;
             padding-bottom: 5px;
-            border-bottom: 1px dashed #ccc;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
         }
         .input-group {
             display: flex;
             margin-bottom: 20px;
-            gap: 10px; /* 按鈕間距 */
+            gap: 5px; /* 按鈕間距縮小 */
         }
         #salary {
             flex-grow: 1;
             padding: 10px;
             font-size: 16px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            /* 讓輸入框看起來更簡潔 */
         }
         .input-group button {
             padding: 10px 15px;
@@ -43,65 +45,71 @@
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 3px;
             transition: background-color 0.3s;
+            white-space: nowrap; /* 防止按鈕文字換行 */
         }
-        /* 查詢按鈕樣式 (藍色) */
+        /* 查詢按鈕樣式 (深色) */
         .input-group button.query-btn {
-            background-color: #3498db;
+            background-color: #333; /* 黑色或深灰色 */
         }
         .input-group button.query-btn:hover {
-            background-color: #2980b9;
+            background-color: #555;
         }
-        /* 重設按鈕樣式 (紅色) */
+        /* 重設按鈕樣式 (可選擇深色或略淺) */
         .input-group button.reset-btn {
-            background-color: #e74c3c; 
+            background-color: #777; 
         }
         .input-group button.reset-btn:hover {
-            background-color: #c0392b;
+            background-color: #555;
         }
         #output {
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0; /* 移除外層 padding，讓內容更貼近邊緣 */
+            border-radius: 0;
+            box-shadow: none; /* 移除陰影 */
             min-height: 50px; 
         }
         .section {
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* 增加區塊間距 */
         }
         .section ul {
             list-style: none;
             padding: 0;
             margin: 5px 0 10px 0;
-            line-height: 1.8;
+            line-height: 2; /* 讓行距更寬鬆 */
         }
         .total {
             font-weight: bold;
             font-size: 1.1em;
-            color: #c0392b; /* 合計金額使用強調色 */
-            padding: 5px 0;
-            border-top: 1px solid #ddd;
+            color: #333; /* 合計金額顏色與內文保持一致 */
+            padding: 10px 0;
+            border-top: 1px solid #ddd; /* 底部使用淺色分隔線 */
             margin-top: 10px;
         }
         .divider {
-            border: 0;
-            height: 1px;
-            background-color: #eee;
-            margin: 15px 0;
+            display: none; /* 隱藏程式碼中原有的分割線 */
+        }
+        /* 針對結果區的文字做微調 */
+        #output ul li {
+            padding-left: 0;
         }
         .description-box {
-            background-color: #ecf0f1;
+            background-color: #f0f0f0; /* 說明區塊背景略淺 */
+            color: #333;
             padding: 15px;
-            border-left: 5px solid #3498db;
+            border-left: 5px solid #333;
             margin-top: 20px;
             font-size: 0.9em;
+        }
+        .description-box h4 {
+             border-bottom: none;
         }
     </style>
 </head>
 <body>
 
-    <h1><span id="year"></span>年勞保健保勞退查詢</h1>
+    <h1>114年勞保健保勞退查詢</h1>
 
     <p>只要輸入月薪，就能立刻查投保級距，對照薪資單不再霧煞煞。</p>
 
@@ -133,6 +141,7 @@
             for (let i = 0; i < list.length; i++) {
                 if (salary <= list[i].level) return list[i];
             }
+            // 返回最高級距
             return list[list.length - 1];
         }
 
@@ -172,7 +181,7 @@
                     const labor_level_to_calculate = Math.min(salary, 45800); // 普保最高 45,800 元
                     const job_level_to_calculate = Math.min(salary, 72800); // 職保最高 72,800 元
                     
-                    // 取得實際投保級距
+                    // 取得實際投保級距 
                     const labor_ins_level = getLevel(labor_level_to_calculate, grades.labor).level;
                     const job_ins_level = getLevel(job_level_to_calculate, grades.job).level;
                     const health_ins_level = health.level;
@@ -186,28 +195,26 @@
                         <div class="section">
                             <h4>投保級距</h4>
                             <ul>
-                                <li>勞保：${labor_ins_level.toLocaleString()} 元（最高 45,800 元）</li>
-                                <li>職保：${job_ins_level.toLocaleString()} 元（最高 72,800 元）</li>
+                                <li>勞保（普保）：${labor_ins_level.toLocaleString()} 元（最高 45,800 元）</li>
+                                <li>職保（災保）：${job_ins_level.toLocaleString()} 元（最高 72,800 元）</li>
                                 <li>健保：${health_ins_level.toLocaleString()} 元</li>
                                 <li>勞退：${pension_base.toLocaleString()} 元（實際工資，最高 150,000 元）</li>
                             </ul>
                         </div>
-                        <hr class="divider">
                         <div class="section">
                             <h4>個人負擔</h4>
                             <ul>
-                                <li>勞保：${labor.employee.toLocaleString()} 元</li>
+                                <li>勞保（普保）：${labor.employee.toLocaleString()} 元</li>
                                 <li>健保：${health.employee.toLocaleString()} 元</li>
                                 <li>勞退：0 元</li>
                             </ul>
                             <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
                         </div>
-                        <hr class="divider">
                         <div class="section">
                             <h4>公司負擔</h4>
                             <ul>
-                                <li>勞保：${labor.company.toLocaleString()} 元</li>
-                                <li>職保：${job.company.toLocaleString()} 元</li>
+                                <li>勞保（普保）：${labor.company.toLocaleString()} 元</li>
+                                <li>職保（災保）：${job.company.toLocaleString()} 元</li>
                                 <li>健保：${health.company.toLocaleString()} 元</li>
                                 <li>勞退：${pension.company.toLocaleString()} 元</li>
                             </ul>
@@ -228,16 +235,13 @@
             document.getElementById("salary").focus(); 
         }
 
-        // 讓 Enter 鍵觸發查詢 (解決無法按 Enter 的問題)
+        // 讓 Enter 鍵觸發查詢 
         document.getElementById("salary").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); 
                 document.querySelector(".input-group button.query-btn").click(); 
             }
         });
-
-        // 設定年份
-        document.getElementById("year").innerText = new Date().getFullYear();
     </script>
 </body>
 </html>
