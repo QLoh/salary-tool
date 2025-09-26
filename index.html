@@ -132,71 +132,98 @@
       return list[list.length - 1];
     }
 
-    function calculate() {
-      const input = document.getElementById("salary").value.trim();
+    <script>
+    // 輔助函式：根據薪資在級距表中找到對應的費用
+    function getLevel(salary, list) {
+      for (let i = 0; i < list.length; i++) {
+        if (salary <= list[i].level) return list[i];
+      }
+      return list[list.length - 1];
+    }
 
-      if (!/^\d+$/.test(input)) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額，不要有小數點或文字。</p>";
-        return;
-      }
+    function calculate() {
+      const input = document.getElementById("salary").value.trim();
 
-      const salary = parseInt(input, 10);
-      if (salary <= 0) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
-        return;
-      }
+      if (!/^\d+$/.test(input)) {
+        document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額，不要有小數點或文字。</p>";
+        return;
+      }
 
-      fetch("grades.json")
-        .then(res => res.json())
-        .then(grades => {
-          const labor = getLevel(salary, grades.labor);
-          const health = getLevel(salary, grades.health);
-          const pension = {
-            level: salary,
-            company: Math.round(salary * 0.06),
-            employee: 0
-          };
+      const salary = parseInt(input, 10);
+      if (salary <= 0) {
+        document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
+        return;
+      }
 
-          const totalEmp = labor.employee + health.employee + pension.employee;
-          const totalComp = labor.company + health.company + pension.company;
+      fetch("grades.json")
+        .then(res => res.json())
+        .then(grades => {
+          // 1. 取得勞保(普保)費用
+          const labor = getLevel(salary, grades.labor);
+          // 2. 取得健保費用
+          const health = getLevel(salary, grades.health);
+          // 3. 取得職保(災保)費用
+          const job = getLevel(salary, grades.job);
+          
+          // 4. 計算勞退 (依實際薪資計算，最高 150,000 元，但這裡假設您的表格只列到 313,000)
+          // 根據您的表格，勞退最高級距是 150,000 元 [cite: 3]
+          const pension_base = Math.min(salary, 150000);
+          const pension = {
+            level: salary,
+            company: Math.round(pension_base * 0.06),
+            employee: 0
+          };
 
-          document.getElementById("output").innerHTML = `
-            <div class="section">
-              <h4>投保級距</h4>
-              <ul>
-                <li>勞保：${labor.level.toLocaleString()} 元</li>
-                <li>健保：${health.level.toLocaleString()} 元</li>
-                <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
-              </ul>
-            </div>
-            <hr class="divider">
-            <div class="section">
-              <h4>個人負擔</h4>
-              <ul>
-                <li>勞保：${labor.employee.toLocaleString()} 元</li>
-                <li>健保：${health.employee.toLocaleString()} 元</li>
-                <li>勞退：0 元</li>
-              </ul>
-              <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
-            </div>
-            <hr class="divider">
-            <div class="section">
-              <h4>公司負擔</h4>
-              <ul>
-                <li>勞保：${labor.company.toLocaleString()} 元</li>
-                <li>健保：${health.company.toLocaleString()} 元</li>
-                <li>勞退：${pension.company.toLocaleString()} 元</li>
-              </ul>
-              <div class="total">合計：${totalComp.toLocaleString()} 元</div>
-            </div>
-          `;
-        })
-        .catch(() => {
-          document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
-        });
-    }
+          // 修正顯示級距：
+          const labor_level_to_show = Math.min(labor.level, 45800);
+          const job_level_to_show = Math.min(job.level, 72800);
 
-    document.getElementById("year").innerText = new Date().getFullYear();
+
+          // 計算總額
+          const totalEmp = labor.employee + health.employee + pension.employee;
+          // 公司負擔總額 = 普保 + 職保 + 健保 + 勞退
+          const totalComp = labor.company + job.company + health.company + pension.company;
+
+          document.getElementById("output").innerHTML = `
+            <div class="section">
+              <h4>投保級距</h4>
+              <ul>
+                <li>勞保（普保）：${labor_level_to_show.toLocaleString()} 元（最高 45,800 元）</li>
+                <li>職保（災保）：${job_level_to_show.toLocaleString()} 元（最高 72,800 元）</li>
+                <li>健保：${health.level.toLocaleString()} 元</li>
+                <li>勞退：${pension_base.toLocaleString()} 元（最高 150,000 元）</li>
+              </ul>
+            </div>
+            <hr class="divider">
+            <div class="section">
+              <h4>個人負擔</h4>
+              <ul>
+                <li>勞保（普保）：${labor.employee.toLocaleString()} 元</li>
+                <li>健保：${health.employee.toLocaleString()} 元</li>
+                <li>勞退：0 元</li>
+              </ul>
+              <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
+            </div>
+            <hr class="divider">
+            <div class="section">
+              <h4>公司負擔</h4>
+              <ul>
+                <li>勞保（普保）：${labor.company.toLocaleString()} 元</li>
+                <li>職保（災保）：${job.company.toLocaleString()} 元</li>
+                <li>健保：${health.company.toLocaleString()} 元</li>
+                <li>勞退：${pension.company.toLocaleString()} 元</li>
+              </ul>
+              <div class="total">合計：${totalComp.toLocaleString()} 元</div>
+            </div>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
+        });
+    }
+
+    document.getElementById("year").innerText = new Date().getFullYear();
+
   </script>
 </body>
 </html>
