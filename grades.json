@@ -1,406 +1,596 @@
 {
   "labor": [
     {
-      "level": 1500,
-      "company": 972,
-      "employee": 277
+      "level": 1,
+      "company": 28590,
+      "employee": 28590
     },
     {
-      "level": 3000,
-      "company": 972,
-      "employee": 277
+      "level": 2,
+      "company": 28800,
+      "employee": 28800
     },
     {
-      "level": 4500,
-      "company": 972,
-      "employee": 277
+      "level": 3,
+      "company": 30300,
+      "employee": 30300
     },
     {
-      "level": 6000,
-      "company": 972,
-      "employee": 277
+      "level": 4,
+      "company": 31800,
+      "employee": 31800
     },
     {
-      "level": 7500,
-      "company": 972,
-      "employee": 277
+      "level": 5,
+      "company": 33300,
+      "employee": 33300
     },
     {
-      "level": 8700,
-      "company": 972,
-      "employee": 277
+      "level": 6,
+      "company": 34800,
+      "employee": 34800
     },
     {
-      "level": 9900,
-      "company": 972,
-      "employee": 277
+      "level": 7,
+      "company": 36300,
+      "employee": 36300
     },
     {
-      "level": 11100,
-      "company": 972,
-      "employee": 277
+      "level": 8,
+      "company": 38200,
+      "employee": 38200
     },
     {
-      "level": 12540,
-      "company": 1097,
-      "employee": 313
+      "level": 9,
+      "company": 40100,
+      "employee": 40100
     },
     {
-      "level": 13500,
-      "company": 1182,
-      "employee": 338
+      "level": 10,
+      "company": 42000,
+      "employee": 42000
     },
     {
-      "level": 15840,
-      "company": 1386,
-      "employee": 396
+      "level": 11,
+      "company": 43900,
+      "employee": 43900
     },
     {
-      "level": 16500,
-      "company": 1444,
-      "employee": 413
+      "level": 12,
+      "company": 45800,
+      "employee": 45800
     },
     {
-      "level": 17280,
-      "company": 1512,
-      "employee": 432
+      "level": 13,
+      "company": 48200,
+      "employee": 48200
     },
     {
-      "level": 17880,
-      "company": 1564,
-      "employee": 447
+      "level": 14,
+      "company": 50600,
+      "employee": 50600
     },
     {
-      "level": 19047,
-      "company": 1666,
-      "employee": 476
+      "level": 15,
+      "company": 53000,
+      "employee": 53000
     },
     {
-      "level": 20008,
-      "company": 1751,
-      "employee": 500
+      "level": 16,
+      "company": 55400,
+      "employee": 55400
     },
     {
-      "level": 21009,
-      "company": 1838,
-      "employee": 525
+      "level": 17,
+      "company": 57800,
+      "employee": 57800
     },
     {
-      "level": 22000,
-      "company": 1925,
-      "employee": 550
+      "level": 18,
+      "company": 60800,
+      "employee": 60800
     },
     {
-      "level": 23100,
-      "company": 2022,
-      "employee": 577
+      "level": 19,
+      "company": 63800,
+      "employee": 63800
     },
     {
-      "level": 24000,
-      "company": 2100,
-      "employee": 600
+      "level": 20,
+      "company": 66800,
+      "employee": 66800
     },
     {
-      "level": 25250,
-      "company": 2210,
-      "employee": 632
+      "level": 21,
+      "company": 69800,
+      "employee": 69800
     },
     {
-      "level": 26400,
-      "company": 2310,
-      "employee": 660
+      "level": 22,
+      "company": 72800,
+      "employee": 72800
     },
     {
-      "level": 27600,
-      "company": 2415,
-      "employee": 690
+      "level": 23,
+      "company": 76500,
+      "employee": 76500
     },
     {
-      "level": 28590,
-      "company": 2501,
-      "employee": 715
+      "level": 24,
+      "company": 80200,
+      "employee": 80200
     },
     {
-      "level": 28800,
-      "company": 2520,
-      "employee": 720
+      "level": 25,
+      "company": 83900,
+      "employee": 83900
     },
     {
-      "level": 30300,
-      "company": 2651,
-      "employee": 758
+      "level": 26,
+      "company": 87600,
+      "employee": 87600
     },
     {
-      "level": 31800,
-      "company": 2783,
-      "employee": 795
+      "level": 27,
+      "company": 92100,
+      "employee": 92100
     },
     {
-      "level": 33300,
-      "company": 2914,
-      "employee": 833
+      "level": 28,
+      "company": 96600,
+      "employee": 96600
     },
     {
-      "level": 34800,
-      "company": 3045,
-      "employee": 870
+      "level": 29,
+      "company": 101100,
+      "employee": 101100
     },
     {
-      "level": 36300,
-      "company": 3176,
-      "employee": 908
+      "level": 30,
+      "company": 105600,
+      "employee": 105600
     },
     {
-      "level": 38200,
-      "company": 3342,
-      "employee": 955
+      "level": 31,
+      "company": 110100,
+      "employee": 110100
     },
     {
-      "level": 40100,
-      "company": 3509,
-      "employee": 1002
+      "level": 32,
+      "company": 115500,
+      "employee": 115500
     },
     {
-      "level": 42000,
-      "company": 3675,
-      "employee": 1050
+      "level": 33,
+      "company": 120900,
+      "employee": 120900
     },
     {
-      "level": 43900,
-      "company": 3841,
-      "employee": 1098
+      "level": 34,
+      "company": 126300,
+      "employee": 126300
     },
     {
-      "level": 45800,
-      "company": 4008,
-      "employee": 1145
+      "level": 35,
+      "company": 131700,
+      "employee": 131700
+    },
+    {
+      "level": 36,
+      "company": 137100,
+      "employee": 137100
+    },
+    {
+      "level": 37,
+      "company": 142500,
+      "employee": 142500
+    },
+    {
+      "level": 38,
+      "company": 147900,
+      "employee": 147900
+    },
+    {
+      "level": 39,
+      "company": 150000,
+      "employee": 150000
+    },
+    {
+      "level": 40,
+      "company": 156400,
+      "employee": 156400
+    },
+    {
+      "level": 41,
+      "company": 162800,
+      "employee": 162800
+    },
+    {
+      "level": 42,
+      "company": 169200,
+      "employee": 169200
+    },
+    {
+      "level": 43,
+      "company": 175600,
+      "employee": 175600
+    },
+    {
+      "level": 44,
+      "company": 182000,
+      "employee": 182000
+    },
+    {
+      "level": 45,
+      "company": 189500,
+      "employee": 189500
+    },
+    {
+      "level": 46,
+      "company": 197000,
+      "employee": 197000
+    },
+    {
+      "level": 47,
+      "company": 204500,
+      "employee": 204500
+    },
+    {
+      "level": 48,
+      "company": 212000,
+      "employee": 212000
+    },
+    {
+      "level": 49,
+      "company": 219500,
+      "employee": 219500
+    },
+    {
+      "level": 50,
+      "company": 228200,
+      "employee": 228200
+    },
+    {
+      "level": 51,
+      "company": 236900,
+      "employee": 236900
+    },
+    {
+      "level": 52,
+      "company": 245600,
+      "employee": 245600
+    },
+    {
+      "level": 53,
+      "company": 254300,
+      "employee": 254300
+    },
+    {
+      "level": 54,
+      "company": 263000,
+      "employee": 263000
+    },
+    {
+      "level": 55,
+      "company": 273000,
+      "employee": 273000
+    },
+    {
+      "level": 56,
+      "company": 283000,
+      "employee": 283000
+    },
+    {
+      "level": 57,
+      "company": 293000,
+      "employee": 293000
+    },
+    {
+      "level": 58,
+      "company": 303000,
+      "employee": 303000
+    },
+    {
+      "level": 59,
+      "company": 313000,
+      "employee": 313000
     }
   ],
   "health": [
     {
-      "level": 1500,
-      "company": 1384,
+      "level": 1,
+      "company": "1,384",
       "employee": 443
     },
     {
-      "level": 3000,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 4500,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 6000,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 7500,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 8700,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 9900,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 11100,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 12540,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 13500,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 15840,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 16500,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 17280,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 17880,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 19047,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 20008,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 21009,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 22000,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 23100,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 24000,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 25250,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 26400,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 27600,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 28590,
-      "company": 1384,
-      "employee": 443
-    },
-    {
-      "level": 28800,
-      "company": 1394,
+      "level": 2,
+      "company": "1,394",
       "employee": 447
     },
     {
-      "level": 30300,
-      "company": 1466,
+      "level": 3,
+      "company": "1,466",
       "employee": 470
     },
     {
-      "level": 31800,
-      "company": 1539,
+      "level": 4,
+      "company": "1,539",
       "employee": 493
     },
     {
-      "level": 33300,
-      "company": 1611,
+      "level": 5,
+      "company": "1,611",
       "employee": 516
     },
     {
-      "level": 34800,
-      "company": 1684,
+      "level": 6,
+      "company": "1,684",
       "employee": 540
     },
     {
-      "level": 36300,
-      "company": 1757,
+      "level": 7,
+      "company": "1,757",
       "employee": 563
     },
     {
-      "level": 38200,
-      "company": 1849,
+      "level": 8,
+      "company": "1,849",
       "employee": 592
     },
     {
-      "level": 40100,
-      "company": 1940,
+      "level": 9,
+      "company": "1,940",
       "employee": 622
     },
     {
-      "level": 42000,
-      "company": 2032,
+      "level": 10,
+      "company": "2,032",
       "employee": 651
     },
     {
-      "level": 43900,
-      "company": 2124,
+      "level": 11,
+      "company": "2,124",
       "employee": 681
     },
     {
-      "level": 45800,
-      "company": 2216,
+      "level": 12,
+      "company": "2,216",
       "employee": 710
     },
     {
-      "level": 48200,
-      "company": 2332,
+      "level": 13,
+      "company": "2,332",
       "employee": 748
     },
     {
-      "level": 50600,
-      "company": 2449,
+      "level": 14,
+      "company": "2,449",
       "employee": 785
     },
     {
-      "level": 53000,
+      "level": 15,
       "company": 2565,
       "employee": 822
     },
     {
-      "level": 55400,
+      "level": 16,
       "company": 2681,
       "employee": 859
     },
     {
-      "level": 57800,
+      "level": 17,
       "company": 2797,
       "employee": 896
     },
     {
-      "level": 60800,
+      "level": 18,
       "company": 2942,
       "employee": 943
     },
     {
-      "level": 63800,
+      "level": 19,
       "company": 3087,
       "employee": 990
     },
     {
-      "level": 66800,
+      "level": 20,
       "company": 3233,
       "employee": 1036
     },
     {
-      "level": 69800,
+      "level": 21,
       "company": 3378,
       "employee": 1083
     },
     {
-      "level": 72800,
+      "level": 22,
       "company": 3523,
       "employee": 1129
+    },
+    {
+      "level": 23,
+      "company": 3702,
+      "employee": 1187
+    },
+    {
+      "level": 24,
+      "company": 3881,
+      "employee": 1244
+    },
+    {
+      "level": 25,
+      "company": 4060,
+      "employee": 1301
+    },
+    {
+      "level": 26,
+      "company": 4239,
+      "employee": 1359
+    },
+    {
+      "level": 27,
+      "company": 4457,
+      "employee": 1428
+    },
+    {
+      "level": 28,
+      "company": 4675,
+      "employee": 1498
+    },
+    {
+      "level": 29,
+      "company": 4892,
+      "employee": 1568
+    },
+    {
+      "level": 30,
+      "company": 5110,
+      "employee": 1638
+    },
+    {
+      "level": 31,
+      "company": 5328,
+      "employee": 1708
+    },
+    {
+      "level": 32,
+      "company": 5589,
+      "employee": 1791
+    },
+    {
+      "level": 33,
+      "company": 5850,
+      "employee": 1875
+    },
+    {
+      "level": 34,
+      "company": 6112,
+      "employee": 1959
+    },
+    {
+      "level": 35,
+      "company": 6373,
+      "employee": 2043
+    },
+    {
+      "level": 36,
+      "company": 6634,
+      "employee": 2126
+    },
+    {
+      "level": 37,
+      "company": 6896,
+      "employee": 2210
+    },
+    {
+      "level": 38,
+      "company": 7157,
+      "employee": 2294
+    },
+    {
+      "level": 39,
+      "company": 7259,
+      "employee": 2327
+    },
+    {
+      "level": 40,
+      "company": 7568,
+      "employee": 2426
+    },
+    {
+      "level": 41,
+      "company": 7878,
+      "employee": 2525
+    },
+    {
+      "level": 42,
+      "company": 8188,
+      "employee": 2624
+    },
+    {
+      "level": 43,
+      "company": 8497,
+      "employee": 2724
+    },
+    {
+      "level": 44,
+      "company": 8807,
+      "employee": 2823
+    },
+    {
+      "level": 45,
+      "company": 9170,
+      "employee": 2939
+    },
+    {
+      "level": 46,
+      "company": 9533,
+      "employee": 3055
+    },
+    {
+      "level": 47,
+      "company": 9896,
+      "employee": 3172
+    },
+    {
+      "level": 48,
+      "company": 10259,
+      "employee": 3288
+    },
+    {
+      "level": 49,
+      "company": 10622,
+      "employee": 3404
+    },
+    {
+      "level": 50,
+      "company": 11043,
+      "employee": 3539
+    },
+    {
+      "level": 51,
+      "company": 11464,
+      "employee": 3674
+    },
+    {
+      "level": 52,
+      "company": 11885,
+      "employee": 3809
+    },
+    {
+      "level": 53,
+      "company": 12306,
+      "employee": 3944
+    },
+    {
+      "level": 54,
+      "company": 12727,
+      "employee": 4079
+    },
+    {
+      "level": 55,
+      "company": 13211,
+      "employee": 4234
+    },
+    {
+      "level": 56,
+      "company": 13695,
+      "employee": 4389
+    },
+    {
+      "level": 57,
+      "company": 14179,
+      "employee": 4544
+    },
+    {
+      "level": 58,
+      "company": 14663,
+      "employee": 4700
+    },
+    {
+      "level": 59,
+      "company": 15146,
+      "employee": 4855
     }
   ]
 }
