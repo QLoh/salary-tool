@@ -133,73 +133,80 @@
     }
 
     function calculate() {
-      const input = document.getElementById("salary").value.trim();
+  const input = document.getElementById("salary").value.trim();
 
-      // 檢查是不是數字
-      if (!/^\d+$/.test(input)) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額，不要有小數點或文字。</p>";
-        return;
-      }
-      
-      const salary = parseInt(input, 10);
-      
-      // 檢查是否大於 0
-      if (salary <= 0) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
-        return;
-      }
+  if (!/^\d+$/.test(input)) {
+    document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額。</p>";
+    return;
+  }
 
-      fetch("grades.json")
-        .then(res => res.json())
-        .then(grades => {
-          const labor = getLevel(salary, grades.labor);
-          const health = getLevel(salary, grades.health);
-          const pension = {
-            level: salary,
-            company: Math.round(salary * 0.06),
-            employee: 0
-          };
+  let salary = parseInt(input, 10);
+  if (salary <= 0) {
+    document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
+    return;
+  }
 
-          const totalEmp = labor.employee + health.employee + pension.employee;
-          const totalComp = labor.company + health.company + pension.company;
+  fetch("grades.json")
+    .then(res => res.json())
+    .then(grades => {
+      // 114 年度上限
+      const LABOR_CAP = 45800;
+      const HEALTH_CAP = 72800;
 
-          document.getElementById("output").innerHTML = `
-            <div class="section">
-              <h4>投保級距</h4>
-              <ul>
-                <li>勞保：${labor.level.toLocaleString()} 元</li>
-                <li>健保：${health.level.toLocaleString()} 元</li>
-                <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
-              </ul>
-            </div>
-            <hr class="divider"> <!-- ← 細分隔線就加在這 -->
-             <div class="section">
-              <h4>個人負擔</h4>
-              <ul>
-                <li>勞保：${labor.employee.toLocaleString()} 元</li>
-                <li>健保：${health.employee.toLocaleString()} 元</li>
-                <li>勞退：0 元</li>
-              </ul>
-              <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
-            </div>
-            <hr class="divider"> <!-- ← 細分隔線就加在這 -->
-            <div class="section">
-              <h4>公司負擔</h4>
-              <ul>
-                <li>勞保：${labor.company.toLocaleString()} 元</li>
-                <li>健保：${health.company.toLocaleString()} 元</li>
-                <li>勞退：${pension.company.toLocaleString()} 元</li>
-              </ul>
-              <div class="total">合計：${totalComp.toLocaleString()} 元</div>
-            </div>
-          `;
-        })
-        .catch(() => {
-          document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
-        });
-    }
+      const laborSalary = Math.min(salary, LABOR_CAP);
+      const healthSalary = Math.min(salary, HEALTH_CAP);
 
-    document.getElementById("year").innerText = new Date().getFullYear();
+      const labor = getLevel(laborSalary, grades.labor);
+      const health = getLevel(healthSalary, grades.health);
+      const pension = {
+        level: salary,
+        company: Math.round(salary * 0.06),
+        employee: 0
+      };
+
+      const totalEmp = labor.employee + health.employee + pension.employee;
+      const totalComp = labor.company + health.company + pension.company;
+
+      // 提示文字（小字灰色）
+      const laborNote = salary > LABOR_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
+      const healthNote = salary > HEALTH_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
+
+      document.getElementById("output").innerHTML = `
+        <div class="section">
+          <h4>投保級距</h4>
+          <ul>
+            <li>勞保：${labor.level.toLocaleString()} 元 ${laborNote}</li>
+            <li>健保：${health.level.toLocaleString()} 元 ${healthNote}</li>
+            <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
+          </ul>
+        </div>
+        <hr class="divider">
+        <div class="section">
+          <h4>個人負擔</h4>
+          <ul>
+            <li>勞保：${labor.employee.toLocaleString()} 元</li>
+            <li>健保：${health.employee.toLocaleString()} 元</li>
+            <li>勞退：0 元</li>
+          </ul>
+          <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
+        </div>
+        <hr class="divider">
+        <div class="section">
+          <h4>公司負擔</h4>
+          <ul>
+            <li>勞保：${labor.company.toLocaleString()} 元</li>
+            <li>健保：${health.company.toLocaleString()} 元</li>
+            <li>勞退：${pension.company.toLocaleString()} 元</li>
+          </ul>
+          <div class="total">合計：${totalComp.toLocaleString()} 元</div>
+        </div>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
+    });
+}
+
   </script>
 </body>
 </html>
