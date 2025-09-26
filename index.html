@@ -1,229 +1,225 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>114年勞保健保勞退查詢小工具｜快速比對投保級距</title>
-  <meta name="description" content="輸入薪資即可快速查詢 114 年最新勞保、健保、勞退的投保級距與公司/個人負擔金額，協助勞工與 HR 確認薪資是否投保正確。">
-  <meta name="keywords" content="114年, 勞保級距, 健保保費, 勞退提繳, 勞健保, 投保薪資, 保費計算, HR 工具">
-  <meta name="author" content="水山子的研究室">
-
-  <!-- 結構化資料 (JSON-LD) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "114年勞保健保勞退查詢小工具",
-    "description": "輸入薪資即可快速查詢勞保、健保、勞退的投保級距與保費分攤。",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "All",
-    "url": "https://你的帳號.github.io/你的repo/",
-    "author": {
-      "@type": "Organization",
-      "name": "水山子的研究室"
-    }
-  }
-  </script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      font-size: 18px;
-      line-height: 1.6;
-      color: #333;
-    }
-    h1, h2 { margin-bottom: 10px; }
-    input, button {
-      font-size: 18px;
-      padding: 10px;
-      margin: 5px 0;
-    }
-    button {
-      background-color: #111827;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover { background-color: #374151; }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    .result .section { margin-bottom: 20px; }
-    .result .section h4 {
-      margin-bottom: 5px;
-      font-size: 18px;
-      color: #444;
-    }
-    .result ul {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-    }
-    .result li { margin: 4px 0; }
-    .total {
-      margin-top: 8px;
-      font-weight: bold;
-      color: #000;
-    }
-    @media (max-width: 600px) {
-      body { font-size: 20px; }
-      input, button {
-        width: 100%;
-        box-sizing: border-box;
-      }
-    }
-    .divider {
-      border: none;
-      border-top: 0.5px solid #e5e7eb;
-      margin: 12px auto;
-      width: 85%;
-      opacity: 0.4;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><span id="year"></span>年勞保健保勞退查詢</title>
+    <style>
+        body {
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif, "微軟正黑體", "Microsoft JhengHei";
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h4 {
+            color: #2980b9;
+            margin-top: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #salary {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            transition: background-color 0.3s;
+        }
+        .input-group button:hover {
+            background-color: #2980b9;
+        }
+        #output {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 15px;
+        }
+        .section ul {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 10px 0;
+            line-height: 1.8;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #c0392b;
+            padding: 5px 0;
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+        }
+        .divider {
+            border: 0;
+            height: 1px;
+            background-color: #eee;
+            margin: 15px 0;
+        }
+        .description-box {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-  <h1>114年勞保健保勞退查詢</h1>
-  <p>只要輸入月薪，就能立刻查投保級距，對照薪資單不再霧煞煞。</p>
 
-  <input type="number" id="salary" placeholder="請輸入月薪">
-  <button onclick="calculate()">查詢</button>
+    <h1><span id="year"></span>年勞保健保勞退查詢</h1>
 
-  <div class="result" id="output"></div>
+    <p>只要輸入月薪，就能立刻查投保級距，對照薪資單不再霧煞煞。</p>
 
-  <h2>使用說明</h2>
-  <ul style="font-family: monospace; line-height: 1.8;">
-    <li>本工具方便勞工快速查詢保險級距.</li>
-    <li>可連線勞保局ｅ化系統比對投保資料.</li>
-    <li>計算方式以「月」（30日）為單位.</li>
-    <li>健保僅算本人保費，不含眷屬保費.</li>
-    <li>勞退依實際工資提繳6％，不看級距.</li>
-  </ul>
+    <div class="input-group">
+        <input type="number" id="salary" placeholder="請輸入月薪 (如：50000)">
+        <button onclick="calculate()">查詢</button>
+    </div>
 
-  <div style="border:1px solid #93c5fd; background:#eff6ff; color:#1e3a8a; padding:12px; border-radius:6px; margin-top:15px; font-size:15px; line-height:1.6;">
-    薪資總額的計算，依《勞基法》第2條第3款規定，除了本薪外，固定給付的獎金、津貼也要算進去。<br>
-    工資項目是否要列入，如有疑慮，請向勞動部或縣市政府勞工局諮詢確認。
-  </div>
+    <div id="output">
+        </div>
 
-  <footer style="margin-top:40px; text-align:center; font-size:14px; color:#555; background:#f5f5f5; padding:15px">
-    © <span id="year"></span> 水山子的研究室
-    <br>
-    意見回饋信箱：
-    <a href="mailto:sarraaagoole@gmail.com?subject=三保一退查詢小工具意見回饋"
-       style="color:#0066cc; text-decoration:none;">
-       sarraaagoole@gmail.com
-    </a>
-    <br>
-    使用人次：
-    <img src="https://hitwebcounter.com/counter/counter.php?page=21438887&style=0006&nbdigits=5&type=page&initCount=0"
-         title="訪客人數" alt="counter" border="0" />
-  </footer>
+    <div class="description-box">
+        <h4>使用說明</h4>
+        <ul>
+            <li>本工具方便勞工快速查詢保險級距。</li>
+            <li>可連線勞保局 e化系統比對投保資料。</li>
+            <li>計算方式以「月」(30日) 為單位。</li>
+            <li>健保僅算本人保費，不含眷屬保費。</li>
+            <li>勞退依實際工資提繳 6%，不看級距。</li>
+        </ul>
+        <p style="color: #c0392b; font-weight: bold;">薪資總額的計算，依《勞基法》第2條第3款規定，除了本薪外，固定給付的獎金、津貼也要算進去。工資項目是否要列入，如有疑慮，請向勞動部或縣市政府勞工局諮詢確認。</p>
+    </div>
 
-  <script>
-    function getLevel(salary, list) {
-      for (let i = 0; i < list.length; i++) {
-        if (salary <= list[i].level) return list[i];
-      }
-      return list[list.length - 1];
-    }
 
     <script>
-    // 輔助函式：根據薪資在級距表中找到對應的費用
-    function getLevel(salary, list) {
-      for (let i = 0; i < list.length; i++) {
-        if (salary <= list[i].level) return list[i];
-      }
-      return list[list.length - 1];
-    }
+        // 輔助函式：根據薪資在級距表中找到對應的費用
+        function getLevel(salary, list) {
+            for (let i = 0; i < list.length; i++) {
+                if (salary <= list[i].level) return list[i];
+            }
+            return list[list.length - 1];
+        }
 
-    function calculate() {
-      const input = document.getElementById("salary").value.trim();
+        function calculate() {
+            const input = document.getElementById("salary").value.trim();
 
-      if (!/^\d+$/.test(input)) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額，不要有小數點或文字。</p>";
-        return;
-      }
+            if (!/^\d+$/.test(input)) {
+                document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額，不要有小數點或文字。</p>";
+                return;
+            }
 
-      const salary = parseInt(input, 10);
-      if (salary <= 0) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
-        return;
-      }
+            const salary = parseInt(input, 10);
+            if (salary <= 0) {
+                document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
+                return;
+            }
 
-      fetch("grades.json")
-        .then(res => res.json())
-        .then(grades => {
-          // 1. 取得勞保(普保)費用
-          const labor = getLevel(salary, grades.labor);
-          // 2. 取得健保費用
-          const health = getLevel(salary, grades.health);
-          // 3. 取得職保(災保)費用
-          const job = getLevel(salary, grades.job);
-          
-          // 4. 計算勞退 (依實際薪資計算，最高 150,000 元，但這裡假設您的表格只列到 313,000)
-          // 根據您的表格，勞退最高級距是 150,000 元 [cite: 3]
-          const pension_base = Math.min(salary, 150000);
-          const pension = {
-            level: salary,
-            company: Math.round(pension_base * 0.06),
-            employee: 0
-          };
+            fetch("grades.json")
+                .then(res => res.json())
+                .then(grades => {
+                    // 1. 普保 (普通勞保) 費用：員工和公司負擔的基礎
+                    const labor = getLevel(salary, grades.labor);
+                    // 2. 健保 費用
+                    const health = getLevel(salary, grades.health);
+                    // 3. 職保 (災保) 費用：僅公司負擔
+                    const job = getLevel(salary, grades.job);
+                    
+                    // 4. 勞退 (最高 150,000 元)
+                    const pension_base = Math.min(salary, 150000); // 勞退最高級距 150,000 元
+                    const pension = {
+                        level: salary,
+                        company: Math.round(pension_base * 0.06),
+                        employee: 0 // 勞退員工提繳為自願性，預設為 0
+                    };
 
-          // 修正顯示級距：
-          const labor_level_to_show = Math.min(labor.level, 45800);
-          const job_level_to_show = Math.min(job.level, 72800);
+                    // 修正投保級距的計算與顯示邏輯
+                    const labor_level_to_calculate = Math.min(salary, 45800); // 普保最高 45,800 元
+                    const job_level_to_calculate = Math.min(salary, 72800); // 職保最高 72,800 元
+                    
+                    // 勞保/職保/健保/勞退的實際投保級距 (可能因投保上限而採用較低級距)
+                    const labor_ins_level = getLevel(labor_level_to_calculate, grades.labor).level;
+                    const job_ins_level = getLevel(job_level_to_calculate, grades.job).level;
+                    const health_ins_level = health.level;
 
 
-          // 計算總額
-          const totalEmp = labor.employee + health.employee + pension.employee;
-          // 公司負擔總額 = 普保 + 職保 + 健保 + 勞退
-          const totalComp = labor.company + job.company + health.company + pension.company;
+                    // 計算總額
+                    // 個人負擔 = 普保 + 健保 + 勞退(0)
+                    const totalEmp = labor.employee + health.employee + pension.employee; 
+                    // 公司負擔總額 = 普保 + 職保 + 健保 + 勞退
+                    const totalComp = labor.company + job.company + health.company + pension.company;
 
-          document.getElementById("output").innerHTML = `
-            <div class="section">
-              <h4>投保級距</h4>
-              <ul>
-                <li>勞保（普保）：${labor_level_to_show.toLocaleString()} 元（最高 45,800 元）</li>
-                <li>職保（災保）：${job_level_to_show.toLocaleString()} 元（最高 72,800 元）</li>
-                <li>健保：${health.level.toLocaleString()} 元</li>
-                <li>勞退：${pension_base.toLocaleString()} 元（最高 150,000 元）</li>
-              </ul>
-            </div>
-            <hr class="divider">
-            <div class="section">
-              <h4>個人負擔</h4>
-              <ul>
-                <li>勞保（普保）：${labor.employee.toLocaleString()} 元</li>
-                <li>健保：${health.employee.toLocaleString()} 元</li>
-                <li>勞退：0 元</li>
-              </ul>
-              <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
-            </div>
-            <hr class="divider">
-            <div class="section">
-              <h4>公司負擔</h4>
-              <ul>
-                <li>勞保（普保）：${labor.company.toLocaleString()} 元</li>
-                <li>職保（災保）：${job.company.toLocaleString()} 元</li>
-                <li>健保：${health.company.toLocaleString()} 元</li>
-                <li>勞退：${pension.company.toLocaleString()} 元</li>
-              </ul>
-              <div class="total">合計：${totalComp.toLocaleString()} 元</div>
-            </div>
-          `;
-        })
-        .catch(() => {
-          document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
-        });
-    }
+                    document.getElementById("output").innerHTML = `
+                        <div class="section">
+                            <h4>投保級距</h4>
+                            <ul>
+                                <li>勞保（普保）：${labor_ins_level.toLocaleString()} 元（最高 45,800 元）</li>
+                                <li>職保（災保）：${job_ins_level.toLocaleString()} 元（最高 72,800 元）</li>
+                                <li>健保：${health_ins_level.toLocaleString()} 元</li>
+                                <li>勞退：${pension_base.toLocaleString()} 元（實際工資，最高 150,000 元）</li>
+                            </ul>
+                        </div>
+                        <hr class="divider">
+                        <div class="section">
+                            <h4>個人負擔</h4>
+                            <ul>
+                                <li>勞保（普保）：${labor.employee.toLocaleString()} 元</li>
+                                <li>健保：${health.employee.toLocaleString()} 元</li>
+                                <li>勞退：0 元</li>
+                            </ul>
+                            <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
+                        </div>
+                        <hr class="divider">
+                        <div class="section">
+                            <h4>公司負擔</h4>
+                            <ul>
+                                <li>勞保（普保）：${labor.company.toLocaleString()} 元</li>
+                                <li>職保（災保）：${job.company.toLocaleString()} 元</li>
+                                <li>健保：${health.company.toLocaleString()} 元</li>
+                                <li>勞退：${pension.company.toLocaleString()} 元</li>
+                            </ul>
+                            <div class="total">合計：${totalComp.toLocaleString()} 元</div>
+                        </div>
+                    `;
+                })
+                .catch((error) => {
+                    console.error("Error loading JSON:", error);
+                    document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在且格式正確。</p>";
+                });
+        }
 
-    document.getElementById("year").innerText = new Date().getFullYear();
+        // 修正項目：讓 Enter 鍵觸發查詢 (keypress event listener)
+        document.getElementById("salary").addEventListener("keypress", function(event) {
+            // 檢查按下的鍵是否為 Enter 鍵
+            if (event.key === "Enter") {
+                event.preventDefault(); // 阻止表單或其他默認行為
+                document.querySelector(".input-group button").click(); // 模擬點擊查詢按鈕
+            }
+        });
 
-  </script>
+        // 設定年份
+        document.getElementById("year").innerText = new Date().getFullYear();
+    </script>
 </body>
 </html>
