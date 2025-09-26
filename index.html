@@ -124,88 +124,130 @@
          title="訪客人數" alt="counter" border="0" />
   </footer>
 
-  <script>
-    function getLevel(salary, list) {
-      for (let i = 0; i < list.length; i++) {
-        if (salary <= list[i].level) return list[i];
+ <script>
+  // 往下取最近級距（floor）
+  function getLevel(salary, list) {
+    let chosen = list[0];
+    for (let i = 0; i < list.length; i++) {
+      if (Number(list[i].level) <= salary) {
+        chosen = list[i];
+      } else {
+        break;
       }
-      return list[list.length - 1];
+    }
+    return chosen;
+  }
+
+  function calculate() {
+    const input = document.getElementById("salary").value.trim();
+
+    if (!/^\d+$/.test(input)) {
+      document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額。</p>";
+      return;
     }
 
-    function calculate() {
-  const input = document.getElementById("salary").value.trim();
+    const salary = parseInt(input, 10);
+    if (salary <= 0) {
+      document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
+      return;
+    }
 
-  if (!/^\d+$/.test(input)) {
-    document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額。</p>";
-    return;
+    fetch("grades.json")
+      .then(res => res.json())
+      .then(grades => {
+        // 114 年度上限
+        const LABOR_CAP = 45800;
+        const HEALTH_CAP = 72800;
+
+        // 正規化 + 先過濾掉超過上限的級距，並確保遞增排序
+        const laborTable = grades.labor
+          .map(r => ({ ...r, level: Number(r.level) }))
+          .filter(r => r.level <= LABOR_CAP)
+          .sort((a, b) => a.level - b.level);
+
+        const healthTable = grades.health
+          .map(r => ({ ...r, level: Number(r.level) }))
+          .filter(r => r.level <= HEALTH_CAP)
+          .sort((a, b) => a.level - b.level);
+
+        // 偵測表內是否含上限級距，若缺少就提示你更新表
+        const laborHasCap = laborTable.some(r => r.level === LABOR_CAP);
+        const healthHasCap = healthTable.some(r => r.level === HEALTH_CAP);
+
+        const laborSalary = Math.min(salary, LABOR_CAP);
+        const healthSalary = Math.min(salary, HEALTH_CAP);
+
+        // 用「往下取」找級距
+        const labor = getLevel(laborSalary, laborTable);
+        const health = getLevel(healthSalary, healthTable);
+
+        // 勞退以實際工資 6% 計
+        const pension = {
+          level: salary,
+          company: Math.round(salary * 0.06),
+          employee: 0
+        };
+
+        const totalEmp = (Number(labor.employee) || 0) + (Number(health.employee) || 0) + pension.employee;
+        const totalComp = (Number(labor.company) || 0) + (Number(health.company) || 0) + pension.company;
+
+        const laborNote = salary > LABOR_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
+        const healthNote = salary > HEALTH_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
+
+        const capWarn =
+          (!laborHasCap || !healthHasCap)
+            ? `<div style="font-size:13px;color:#a16207;background:#fef3c7;border:1px solid #fde68a;padding:8px;border-radius:6px;margin-bottom:8px;">
+                 ⚠️ 級距表可能缺少上限級距：${
+                   !laborHasCap ? "勞保 45,800 " : ""
+                 }${
+                   !healthHasCap ? "健保/職災 72,800 " : ""
+                 }。請更新 <code>grades.json</code>，否則金額會以次高級距計算。
+               </div>`
+            : "";
+
+        document.getElementById("output").innerHTML = `
+          <div style="font-size:14px; color:#666; margin-bottom:8px;">
+            ※ 本查詢依 114 年度（2025年）勞保、健保投保級距上限計算
+          </div>
+          ${capWarn}
+          <div class="section">
+            <h4>投保級距</h4>
+            <ul>
+              <li>勞保：${Number(labor.level).toLocaleString()} 元 ${laborNote}</li>
+              <li>健保：${Number(health.level).toLocaleString()} 元 ${healthNote}</li>
+              <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
+            </ul>
+          </div>
+          <hr class="divider">
+          <div class="section">
+            <h4>個人負擔</h4>
+            <ul>
+              <li>勞保：${(Number(labor.employee) || 0).toLocaleString()} 元</li>
+              <li>健保：${(Number(health.employee) || 0).toLocaleString()} 元</li>
+              <li>勞退：0 元</li>
+            </ul>
+            <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
+          </div>
+          <hr class="divider">
+          <div class="section">
+            <h4>公司負擔</h4>
+            <ul>
+              <li>勞保：${(Number(labor.company) || 0).toLocaleString()} 元</li>
+              <li>健保：${(Number(health.company) || 0).toLocaleString()} 元</li>
+              <li>勞退：${pension.company.toLocaleString()} 元</li>
+            </ul>
+            <div class="total">合計：${totalComp.toLocaleString()} 元</div>
+          </div>
+        `;
+      })
+      .catch(() => {
+        document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
+      });
   }
 
-  let salary = parseInt(input, 10);
-  if (salary <= 0) {
-    document.getElementById("output").innerHTML = "<p>⚠️ 月薪必須大於 0。</p>";
-    return;
-  }
+  document.getElementById("year").innerText = new Date().getFullYear();
+</script>
 
-  fetch("grades.json")
-    .then(res => res.json())
-    .then(grades => {
-      // 114 年度上限
-      const LABOR_CAP = 45800;
-      const HEALTH_CAP = 72800;
-
-      const laborSalary = Math.min(salary, LABOR_CAP);
-      const healthSalary = Math.min(salary, HEALTH_CAP);
-
-      const labor = getLevel(laborSalary, grades.labor);
-      const health = getLevel(healthSalary, grades.health);
-      const pension = {
-        level: salary,
-        company: Math.round(salary * 0.06),
-        employee: 0
-      };
-
-      const totalEmp = labor.employee + health.employee + pension.employee;
-      const totalComp = labor.company + health.company + pension.company;
-
-      // 提示文字（小字灰色）
-      const laborNote = salary > LABOR_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
-      const healthNote = salary > HEALTH_CAP ? "<span style='color:#888; font-size:14px;'>(已達上限)</span>" : "";
-
-      document.getElementById("output").innerHTML = `
-        <div class="section">
-          <h4>投保級距</h4>
-          <ul>
-            <li>勞保：${labor.level.toLocaleString()} 元 ${laborNote}</li>
-            <li>健保：${health.level.toLocaleString()} 元 ${healthNote}</li>
-            <li>勞退：${pension.level.toLocaleString()} 元（實際工資）</li>
-          </ul>
-        </div>
-        <hr class="divider">
-        <div class="section">
-          <h4>個人負擔</h4>
-          <ul>
-            <li>勞保：${labor.employee.toLocaleString()} 元</li>
-            <li>健保：${health.employee.toLocaleString()} 元</li>
-            <li>勞退：0 元</li>
-          </ul>
-          <div class="total">合計：${totalEmp.toLocaleString()} 元</div>
-        </div>
-        <hr class="divider">
-        <div class="section">
-          <h4>公司負擔</h4>
-          <ul>
-            <li>勞保：${labor.company.toLocaleString()} 元</li>
-            <li>健保：${health.company.toLocaleString()} 元</li>
-            <li>勞退：${pension.company.toLocaleString()} 元</li>
-          </ul>
-          <div class="total">合計：${totalComp.toLocaleString()} 元</div>
-        </div>
-      `;
-    })
-    .catch(() => {
-      document.getElementById("output").innerHTML = "<p>讀取資料失敗，請確認 grades.json 是否存在。</p>";
-    });
-}
 
   </script>
 </body>
