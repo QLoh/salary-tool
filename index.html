@@ -163,13 +163,15 @@
           const labor = getLevel(salary, grades.labor);
           const health = getLevel(salary, grades.health);
           const job = getLevel(salary, grades.job);
+          // 新增：勞退也要透過 getLevel 找到對應級距物件
+          const pension_obj = getLevel(salary, grades.pension);
           
           // 勞退退休金 (Employer contribution): 
           // 2026 勞退上限通常隨級距變動，此處抓取 JSON 中定義的 pension 金額 (假設您已將 6% 算入 labor 以外的結構)
           // 若 JSON 沒寫勞退，我們維持 logic 但上限應與 job 級距脫鉤，建議直接用 table 金額
           // 這裡以 6% 基礎計算
-          const pension_base = Math.min(salary, 150000); 
-          const pension_contribution = Math.round(pension_base * 0.06);
+          const pension_base = pension_obj.level; // 這裡會抓到 40,100
+          const pension_fee = Math.round(pension_base * 0.06); // 結果會是 2406
 
           const totalEmp = labor.employee + health.employee; 
           const totalComp = labor.company + job.company + health.company + pension_contribution;
