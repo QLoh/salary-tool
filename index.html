@@ -126,39 +126,28 @@
     }
 
     async function calculate() {
-      const input = document.getElementById("salary").value.trim();
-      const isFullTime = document.querySelector('input[name="empType"]:checked').value === 'full';
-
-      if (!/^\d+$/.test(input)) {
-        document.getElementById("output").innerHTML = "<p>⚠️ 請輸入整數金額。</p>";
-        return;
-      }
-
-      const salary = parseInt(input, 10);
+      const salary = parseInt(document.getElementById("salary").value);
+      const isPartTime = document.querySelector('input[name="empType"]:checked').value === 'partTime';
       
-      try {
-        const response = await fetch("grades.json");
-        const grades = await response.json();
-
-        // 1. 勞保與職保級距 (判斷身分別下限)
-        // 勞保局規定：全職不得低於基本工資；部分工時覈實申報。
-        const laborLookup = isFullTime ? Math.max(salary, 29500) : salary;
-        const labor = getLevel(laborLookup, grades.labor);
-        const job = getLevel(laborLookup, grades.job);
-
-        // 2. 健保級距 (判斷強制下限)
-        // 健保署規定：受雇者最低投保金額不得低於基本工資第一級。
-        const healthLookup = Math.max(salary, 29500);
-        const health = getLevel(healthLookup, grades.health);
-
-        // 3. 勞退 6% 計算 (關鍵：依級距金額計算)
-        // 透過 getLevel 找到對應的級距金額 (例如 40,000 找到 40,100)
-        const pension_obj = getLevel(salary, grades.labor);
-        const pension_base = pension_obj.level; // 這就是投保金額/提繳工資
-        const pension_fee = Math.round(pension_base * 0.06); // 精準計算 6%
-
-        const totalEmp = labor.employee + health.employee; 
-        const totalComp = labor.company + job.company + health.company + pension_fee;
+      const response = await fetch("grades.json");
+      const grades = await response.json();
+    
+      // 1. 勞保/職保：邏輯自動收斂
+      // 如果薪資 5萬，Math.max(50000, 29500) 依然是 50000
+      let laborLookup = isPartTime ? salary : Math.max(salary, 29500);
+      const labor = getLevel(laborLookup, grades.labor);
+      const job = getLevel(laborLookup, grades.job);
+    
+      // 2. 健保：高薪時不受 29,500 下限影響
+      const healthLookup = Math.max(salary, 29500);
+      const health = getLevel(healthLookup, grades.health);
+    
+      // 3. 勞退 6%：依照勞保陣列中的完整級距歸級計算 (解決 2406/3036/3648 問題)
+      const pension_obj = getLevel(salary, grades.labor);
+      const pension_base = pension_obj.level; 
+      const pension_fee = Math.round(pension_base * 0.06);
+    
+  
 
         document.getElementById("output").innerHTML = `
           <div class="section">
