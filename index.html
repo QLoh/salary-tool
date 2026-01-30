@@ -13,11 +13,7 @@
       padding: 20px;
       padding-bottom: 100px;
     }
-    h1 {
-      text-align: center;
-      color: #222;
-      margin-bottom: 20px;
-    }
+    h1 { text-align: center; color: #222; margin-bottom: 20px; }
     .card {
       background: #fff;
       border-radius: 12px;
@@ -35,11 +31,7 @@
       padding: 10px;
       border-radius: 8px;
     }
-    .input-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+    .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
     #salary {
       flex-grow: 1;
       padding: 10px;
@@ -109,97 +101,94 @@
     <div class="description-box">
       <h4>2026年 (115年) 更新計算邏輯</h4>
       <ul>
-        <li><strong>勞退提繳：</strong>系統會自動將月薪「歸級」至分級表級距，再以該級距額度乘以 6%。</li>
-        <li><strong>健保下限：</strong>受雇者最低級距強制鎖定為 29,500 元。</li>
-        <li><strong>勞保下限：</strong>全職人員最低為 29,500 元；部分工時最低為 11,100 元。</li>
-        <li><strong>新增部分工時：</strong>新增部分工時選項，以向下相容。</li>
+        <li><strong>勞退提繳：</strong>系統依據勞保分級表自動歸級，並以 6% 計算。</li>
+        <li><strong>投保下限：</strong>全職人員強制鎖定 29,500 元。</li>
+        <li><strong>部分工時：</strong>勞保最低 11,100 元，健保維持 29,500 元下限。</li>
       </ul>
     </div>
   </div>
 
   <script>
-     // 歸級尋找邏輯
-  function getLevel(salary, list) {
-      if (!list || list.length === 0) return { level: 0, employee: 0, company: 0 };
+    function getLevel(salary, list) {
+      if (!list) return { level: 0, employee: 0, company: 0 };
       for (let i = 0; i < list.length; i++) {
-          if (salary <= list[i].level) return list[i];
+        if (salary <= list[i].level) return list[i];
       }
       return list[list.length - 1]; 
-  }
-  
-  async function calculate() {
+    }
+
+    async function calculate() {
       const salaryInput = document.getElementById("salary").value;
       if (!salaryInput) {
-          alert("請輸入薪資");
-          return;
+        alert("請輸入薪資金額");
+        return;
       }
+      
       const salary = parseInt(salaryInput);
-      // 修正點 1: 比對正確的 value "part"
       const isPartTime = document.querySelector('input[name="empType"]:checked').value === 'part';
       
       try {
-          // 修正點 2: 加入 try 開頭
-          const response = await fetch("grades.json");
-          const grades = await response.json();
+        const response = await fetch("grades.json");
+        const grades = await response.json();
       
-          // 1. 勞保/職保
-          let laborLookup = isPartTime ? salary : Math.max(salary, 29500);
-          const labor = getLevel(laborLookup, grades.labor);
-          const job = getLevel(laborLookup, grades.job);
+        // 1. 勞保/職保：全職下限 29500
+        let laborLookup = isPartTime ? salary : Math.max(salary, 29500);
+        const labor = getLevel(laborLookup, grades.labor);
+        const job = getLevel(laborLookup, grades.job);
       
-          // 2. 健保
-          const healthLookup = Math.max(salary, 29500);
-          const health = getLevel(healthLookup, grades.health);
+        // 2. 健保：受雇者基本下限 29500
+        const healthLookup = Math.max(salary, 29500);
+        const health = getLevel(healthLookup, grades.health);
       
-          // 3. 勞退 6%
-          const pension_obj = getLevel(salary, grades.labor);
-          const pension_base = pension_obj.level; 
-          const pension_fee = Math.round(pension_base * 0.06);
-  
-          // 修正點 3: 計算總額變數
-          const totalEmp = labor.employee + health.employee;
-          const totalComp = labor.company + job.company + health.company + pension_fee;
-  
-          document.getElementById("output").innerHTML = `
-            <div class="section">
-              <h4>115年 投保級距明細</h4>
-              <ul>
-                <li><span>勞工保險等級：</span><span>${labor.level.toLocaleString()} 元</span></li>
-                <li><span>職災保險等級：</span><span>${job.level.toLocaleString()} 元</span></li>
-                <li><span>全民健保等級：</span><span>${health.level.toLocaleString()} 元</span></li>
-                <li><span>勞退提繳等級：</span><span>${pension_base.toLocaleString()} 元</span></li>
-              </ul>
-            </div>
-            <div class="section">
-              <h4>員工負擔額 (個人)</h4>
-              <ul>
-                <li><span>勞工保險費：</span><span>${labor.employee.toLocaleString()} 元</span></li>
-                <li><span>全民健保費：</span><span>${health.employee.toLocaleString()} 元</span></li>
-              </ul>
-              <div class="total"><span>每月自薪資扣除額：</span><span>${totalEmp.toLocaleString()} 元</span></div>
-            </div>
-            <div class="section">
-              <h4>雇主負擔額 (單位)</h4>
-              <ul>
-                <li><span>勞工保險費：</span><span>${labor.company.toLocaleString()} 元</span></li>
-                <li><span>職災保險費：</span><span>${job.company.toLocaleString()} 元</span></li>
-                <li><span>全民健保費：</span><span>${health.company.toLocaleString()} 元</span></li>
-                <li><span>勞退 6% 提繳額：</span><span>${pension_fee.toLocaleString()} 元</span></li>
-              </ul>
-              <div class="total"><span>雇主法定成本合計：</span><span>${totalComp.toLocaleString()} 元</span></div>
-            </div>
-          `;
+        // 3. 勞退 6%
+        const pension_obj = getLevel(salary, grades.labor);
+        const pension_base = pension_obj.level; 
+        const pension_fee = Math.round(pension_base * 0.06);
+
+        // 計算加總
+        const totalEmp = labor.employee + (health.employee || 0);
+        const totalComp = labor.company + (job.company || 0) + (health.company || 0) + pension_fee;
+
+        document.getElementById("output").innerHTML = `
+          <div class="section">
+            <h4>115年 投保級距明細</h4>
+            <ul>
+              <li><span>勞工保險等級：</span><span>${labor.level.toLocaleString()} 元</span></li>
+              <li><span>職災保險等級：</span><span>${job.level.toLocaleString()} 元</span></li>
+              <li><span>全民健保等級：</span><span>${health.level.toLocaleString()} 元</span></li>
+              <li><span>勞退提繳等級：</span><span>${pension_base.toLocaleString()} 元</span></li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>員工負擔額 (個人)</h4>
+            <ul>
+              <li><span>勞工保險費：</span><span>${labor.employee.toLocaleString()} 元</span></li>
+              <li><span>全民健保費：</span><span>${(health.employee || 0).toLocaleString()} 元</span></li>
+            </ul>
+            <div class="total"><span>每月自薪資扣除額：</span><span>${totalEmp.toLocaleString()} 元</span></div>
+          </div>
+          <div class="section">
+            <h4>雇主負擔額 (單位)</h4>
+            <ul>
+              <li><span>勞工保險費：</span><span>${labor.company.toLocaleString()} 元</span></li>
+              <li><span>職災保險費：</span><span>${(job.company || 0).toLocaleString()} 元</span></li>
+              <li><span>全民健保費：</span><span>${(health.company || 0).toLocaleString()} 元</span></li>
+              <li><span>勞退 6% 提繳額：</span><span>${pension_fee.toLocaleString()} 元</span></li>
+            </ul>
+            <div class="total"><span>雇主法定成本合計：</span><span>${totalComp.toLocaleString()} 元</span></div>
+          </div>
+        `;
       } catch (error) {
-          console.error("Error:", error);
-          document.getElementById("output").innerHTML = "<p>❌ 讀取資料失敗，請確認 grades.json 格式是否正確，且必須在伺服器環境（如 VS Code Live Server）下執行。</p>";
+        console.error("Error:", error);
+        document.getElementById("output").innerHTML = "<p style='color:red;'>❌ 無法讀取資料，請確認 grades.json 檔案是否存在且格式正確。</p>";
       }
-  }
-  
-  function resetCalculator() {
+    }
+
+    function resetCalculator() {
       document.getElementById("salary").value = ''; 
       document.getElementById("output").innerHTML = ''; 
       document.getElementById("salary").focus(); 
-  }
+    }
   </script>
 
   <div style="position:fixed; bottom:0; left:0; width:100%; text-align:center; background:#f9f9f9; padding:8px; font-size:12px; color:#333; border-top:1px solid #ddd; z-index:1000;">
