@@ -1,200 +1,86 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>115年勞保健保勞退查詢 (2026最新版)</title>
-  <style>
-    body {
-      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-      background: #f9f9f9;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
-      padding-bottom: 100px;
-    }
-    h1 { text-align: center; color: #222; margin-bottom: 20px; }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 700px;
-      margin: 20px auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .type-selector {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 15px;
-      background: #eee;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-    #salary {
-      flex-grow: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .input-group button {
-      padding: 10px 16px;
-      font-size: 16px;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: background-color 0.3s;
-    }
-    .query-btn { background: #444; }
-    .query-btn:hover { background: #666; }
-    .reset-btn { background: #777; }
-    .reset-btn:hover { background: #555; }
-    #output { margin-top: 20px; font-size: 16px; line-height: 1.6; }
-    .section { margin-bottom: 20px; }
-    .section h4 {
-      margin-bottom: 10px;
-      font-size: 18px;
-      color: #444;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 5px;
-    }
-    .section ul { list-style: none; padding: 0; margin: 0; }
-    .section ul li { margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .total {
-      font-weight: bold;
-      margin-top: 10px;
-      font-size: 1.1em;
-      border-top: 1px solid #ddd;
-      padding-top: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .description-box {
-      background: #f5f5f5;
-      padding: 15px;
-      border-left: 5px solid #333;
-      margin-top: 20px;
-      font-size: 0.9em;
-    }
-  </style>
-</head>
-<body>
-  <h1>115年勞保健保勞退查詢</h1>
-
-  <div class="card">
-    <div class="type-selector">
-      <label><input type="radio" name="empType" value="full" checked> 全職人員</label>
-      <label><input type="radio" name="empType" value="part"> 部分工時</label>
-    </div>
-
-    <div class="input-group">
-      <input type="number" id="salary" placeholder="請輸入月薪總額">
-      <button class="query-btn" onclick="calculate()">查詢</button>
-      <button class="reset-btn" onclick="resetCalculator()">清除</button>
-    </div>
-    
-    <div id="output"></div>
-
-    <div class="description-box">
-      <h4>2026年 (115年) 更新計算邏輯</h4>
-      <ul>
-        <li><strong>勞退提繳：</strong>系統依據勞保分級表自動歸級，並以 6% 計算。</li>
-        <li><strong>投保下限：</strong>全職人員強制鎖定 29,500 元。</li>
-        <li><strong>部分工時：</strong>勞保最低 11,100 元，健保維持 29,500 元下限。</li>
-      </ul>
-    </div>
-  </div>
-
-  <script>
+<script>
+    // 歸級尋找邏輯
     function getLevel(salary, list) {
-      if (!list) return { level: 0, employee: 0, company: 0 };
-      for (let i = 0; i < list.length; i++) {
-        if (salary <= list[i].level) return list[i];
-      }
-      return list[list.length - 1]; 
+        if (!list || list.length === 0) return { level: 0, employee: 0, company: 0 };
+        for (let i = 0; i < list.length; i++) {
+            if (salary <= list[i].level) return list[i];
+        }
+        return list[list.length - 1]; 
     }
 
     async function calculate() {
-      const salaryInput = document.getElementById("salary").value;
-      if (!salaryInput) {
-        alert("請輸入薪資金額");
-        return;
-      }
-      
-      const salary = parseInt(salaryInput);
-      const isPartTime = document.querySelector('input[name="empType"]:checked').value === 'part';
-      
-      try {
-        const response = await fetch("grades.json");
-        const grades = await response.json();
-      
-        // 1. 勞保/職保：全職下限 29500
-        let laborLookup = isPartTime ? salary : Math.max(salary, 29500);
-        const labor = getLevel(laborLookup, grades.labor);
-        const job = getLevel(laborLookup, grades.job);
-      
-        // 2. 健保：受雇者基本下限 29500
-        const healthLookup = Math.max(salary, 29500);
-        const health = getLevel(healthLookup, grades.health);
-      
-        // 3. 勞退 6%
-        const pension_obj = getLevel(salary, grades.labor);
-        const pension_base = pension_obj.level; 
-        const pension_fee = Math.round(pension_base * 0.06);
+        const salaryInput = document.getElementById("salary").value;
+        if (!salaryInput) {
+            alert("請輸入薪資");
+            return;
+        }
+        const salary = parseInt(salaryInput);
+        const isPartTime = document.querySelector('input[name="empType"]:checked').value === 'part';
+        
+        try {
+            const response = await fetch("grades.json");
+            const grades = await response.json();
+        
+            // 基礎查詢值（全職人員下限 29,500）
+            let baseLookup = isPartTime ? salary : Math.max(salary, 29500);
 
-        // 計算加總
-        const totalEmp = labor.employee + (health.employee || 0);
-        const totalComp = labor.company + (job.company || 0) + (health.company || 0) + pension_fee;
+            // 1. 勞保：法定上限 45,800 元
+            const labor = getLevel(Math.min(baseLookup, 45800), grades.labor);
+            
+            // 2. 職保：法定上限 72,800 元
+            const job = getLevel(Math.min(baseLookup, 72800), grades.job);
+        
+            // 3. 健保：法定下限 29,500 元，上限依級距表
+            const healthLookup = Math.max(salary, 29500);
+            const health = getLevel(healthLookup, grades.health);
+        
+            // 4. 勞退 6%：依照薪資歸級 (勞退級距最高可達 15 萬級)
+            const pension_obj = getLevel(salary, grades.labor);
+            const pension_base = pension_obj.level; 
+            const pension_fee = Math.round(pension_base * 0.06);
 
-        document.getElementById("output").innerHTML = `
-          <div class="section">
-            <h4>115年 投保級距明細</h4>
-            <ul>
-              <li><span>勞工保險等級：</span><span>${labor.level.toLocaleString()} 元</span></li>
-              <li><span>職災保險等級：</span><span>${job.level.toLocaleString()} 元</span></li>
-              <li><span>全民健保等級：</span><span>${health.level.toLocaleString()} 元</span></li>
-              <li><span>勞退提繳等級：</span><span>${pension_base.toLocaleString()} 元</span></li>
-            </ul>
-          </div>
-          <div class="section">
-            <h4>員工負擔額 (個人)</h4>
-            <ul>
-              <li><span>勞工保險費：</span><span>${labor.employee.toLocaleString()} 元</span></li>
-              <li><span>全民健保費：</span><span>${(health.employee || 0).toLocaleString()} 元</span></li>
-            </ul>
-            <div class="total"><span>每月自薪資扣除額：</span><span>${totalEmp.toLocaleString()} 元</span></div>
-          </div>
-          <div class="section">
-            <h4>雇主負擔額 (單位)</h4>
-            <ul>
-              <li><span>勞工保險費：</span><span>${labor.company.toLocaleString()} 元</span></li>
-              <li><span>職災保險費：</span><span>${(job.company || 0).toLocaleString()} 元</span></li>
-              <li><span>全民健保費：</span><span>${(health.company || 0).toLocaleString()} 元</span></li>
-              <li><span>勞退 6% 提繳額：</span><span>${pension_fee.toLocaleString()} 元</span></li>
-            </ul>
-            <div class="total"><span>雇主法定成本合計：</span><span>${totalComp.toLocaleString()} 元</span></div>
-          </div>
-        `;
-      } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("output").innerHTML = "<p style='color:red;'>❌ 無法讀取資料，請確認 grades.json 檔案是否存在且格式正確。</p>";
-      }
+            // 計算總額
+            const totalEmp = labor.employee + health.employee;
+            const totalComp = labor.company + (job.company || 0) + health.company + pension_fee;
+
+            document.getElementById("output").innerHTML = `
+              <div class="section">
+                <h4>115年 投保級距明細</h4>
+                <ul>
+                  <li><span>勞工保險等級：</span><span>${labor.level.toLocaleString()} 元</span></li>
+                  <li><span>職災保險等級：</span><span>${job.level.toLocaleString()} 元</span></li>
+                  <li><span>全民健保等級：</span><span>${health.level.toLocaleString()} 元</span></li>
+                  <li><span>勞退提繳等級：</span><span>${pension_base.toLocaleString()} 元</span></li>
+                </ul>
+              </div>
+              <div class="section">
+                <h4>員工負擔額 (個人)</h4>
+                <ul>
+                  <li><span>勞工保險費：</span><span>${labor.employee.toLocaleString()} 元</span></li>
+                  <li><span>全民健保費：</span><span>${health.employee.toLocaleString()} 元</span></li>
+                </ul>
+                <div class="total"><span>每月自薪資扣除額：</span><span>${totalEmp.toLocaleString()} 元</span></div>
+              </div>
+              <div class="section">
+                <h4>雇主負擔額 (單位)</h4>
+                <ul>
+                  <li><span>勞工保險費：</span><span>${labor.company.toLocaleString()} 元</span></li>
+                  <li><span>職災保險費：</span><span>${(job.company || 0).toLocaleString()} 元</span></li>
+                  <li><span>全民健保費：</span><span>${health.company.toLocaleString()} 元</span></li>
+                  <li><span>勞退 6% 提繳額：</span><span>${pension_fee.toLocaleString()} 元</span></li>
+                </ul>
+                <div class="total"><span>雇主法定成本合計：</span><span>${totalComp.toLocaleString()} 元</span></div>
+              </div>
+            `;
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("output").innerHTML = "<p>❌ 讀取資料失敗，請確認 grades.json 檔案是否存在。</p>";
+        }
     }
 
     function resetCalculator() {
-      document.getElementById("salary").value = ''; 
-      document.getElementById("output").innerHTML = ''; 
-      document.getElementById("salary").focus(); 
+        document.getElementById("salary").value = ''; 
+        document.getElementById("output").innerHTML = ''; 
+        document.getElementById("salary").focus(); 
     }
-  </script>
-
-  <div style="position:fixed; bottom:0; left:0; width:100%; text-align:center; background:#f9f9f9; padding:8px; font-size:12px; color:#333; border-top:1px solid #ddd; z-index:1000;">
-    © 水山子研究室 <br>
-    使用人次：
-    <img src="https://hitwebcounter.com/counter/counter.php?page=21445897&style=0024&nbdigits=5&type=page&initCount=80" title="使用人次" alt="訪客計數器" style="vertical-align:middle; border:none;" />
-  </div>
-</body>
-</html>
+</script>
